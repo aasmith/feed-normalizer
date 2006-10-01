@@ -38,9 +38,7 @@ class BaseTest < Test::Unit::TestCase
 
   def test_simple_rss_parser
     assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], SimpleRssParser, false)
-    require 'pp'; pp feed
     assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10], SimpleRssParser, false)
-    require 'pp'; pp feed
   end
 
   # Attempts to parse a feed that Ruby's RSS can't handle.

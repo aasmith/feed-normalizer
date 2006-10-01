@@ -30,7 +30,7 @@ module FeedNormalizer
     def self.package(atomrss)
       feed = Feed.new
 
-      # channel elements
+      # root elements
       feed_mapping = {
         :generator => :generator,
         :title => :title,
@@ -44,34 +44,32 @@ module FeedNormalizer
       map_functions!(feed_mapping, atomrss, feed)
 
       # custom channel elements
-      feed.id = atomrss.id == atomrss.object_id ? "#{atomrss.link}[#{(atomrss.lastBuildDate || atomrss.pubDate).to_i}]" : atomrss.id
+      feed.id = feed_id(atomrss)
       feed.image = image(atomrss)
 
+
+      # entry elements
+      entry_mapping = {
+        :date_published => [:pubDate, :published],
+        :urls => :link,
+        :description => [:description, :summary],
+        :title => :title,
+        :authors => [:author, :contributor]
+      }
+
+      atomrss.entries.each do |atomrss_entry|
+        feed_entry = Entry.new
+        map_functions!(entry_mapping, atomrss_entry, feed_entry)
+
+        # custom entry elements
+        feed_entry.id = atomrss_entry.guid || atomrss_entry[:id] # entries are a Hash..
+        feed_entry.copyright = atomrss_entry.copyright || atomrss.copyright
+        feed_entry.content.body = atomrss_entry.content || atomrss_entry.description
+
+        feed.entries << feed_entry
+      end
+
       feed
-    end
-
-    # sets value, or appends to an existing value
-    def self.map_functions!(mapping, src, dest)
-
-      mapping.each do |dest_function, src_functions|
-        src_functions = [src_functions].flatten # pack into array
-
-        src_functions.each do |src_function|
-          if src.respond_to? src_function
-            value = src.send(src_function)
-            append_or_set!(value, dest, dest_function) if value
-          end
-        end
-
-      end
-    end
-
-    def self.append_or_set!(value, object, object_function)
-      if object.send(object_function).respond_to? :push
-        object.send(object_function).push(value)
-      else
-        object.send(:"#{object_function}=", value)
-      end
     end
 
     def self.image(parser)
@@ -84,6 +82,17 @@ module FeedNormalizer
       elsif parser.respond_to?(:logo) && parser.logo
         parser.logo
       end
+    end
+
+    def self.feed_id(parser)
+      overridden_value(parser, :id) || "#{parser.link}"
+    end
+
+    # gets the value returned from the method if it overriden, otherwise nil.
+    def self.overridden_value(object, method)
+      # XXX: hack to find out if the id method is overriden
+      # Highly dependent upon Method's to_s :(
+      object.id if object.method(:id).to_s.match /SimpleRSS\#/
     end
 
   end
