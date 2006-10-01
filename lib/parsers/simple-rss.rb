@@ -44,7 +44,7 @@ module FeedNormalizer
       map_functions!(feed_mapping, atomrss, feed)
 
       # custom channel elements
-      feed.id = atomrss.id || "#{atomrss.link}[#{(atomrss.lastBuildDate || atomrss.pubDate).to_i}]"
+      feed.id = atomrss.id == atomrss.object_id ? "#{atomrss.link}[#{(atomrss.lastBuildDate || atomrss.pubDate).to_i}]" : atomrss.id
       feed.image = image(atomrss)
 
       feed
@@ -58,7 +58,8 @@ module FeedNormalizer
 
         src_functions.each do |src_function|
           if src.respond_to? src_function
-            append_or_set!(src.send(src_function), dest, dest_function)
+            value = src.send(src_function)
+            append_or_set!(value, dest, dest_function) if value
           end
         end
 
@@ -74,13 +75,13 @@ module FeedNormalizer
     end
 
     def self.image(parser)
-      if parser.image
+      if parser.respond_to?(:image) && parser.image
         if parser.image.match /<url>/ # RSS image contains an <url> spec
           parser.image.scan(/<url>(.*)<\/url>/).to_s
         else
           parser.image # Atom contains just the url
         end
-      elsif parser.logo
+      elsif parser.respond_to?(:logo) && parser.logo
         parser.logo
       end
     end
