@@ -32,4 +32,20 @@ class BaseTest < Test::Unit::TestCase
     assert_kind_of Feed, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], RubyRssParser, false)
   end
 
+  def test_ruby_rss_parser
+    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], RubyRssParser, false)
+  end
+
+  def test_simple_rss_parser
+    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], SimpleRssParser, false)
+
+    require 'pp'; pp feed
+  end
+
+  # Attempts to parse a feed that Ruby's RSS can't handle.
+  # SimpleRSS should provide the parsed feed.
+  def test_parser_failover_order
+
+  end
+
 end
