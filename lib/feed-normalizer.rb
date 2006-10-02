@@ -102,9 +102,11 @@ module FeedNormalizer
 
       ParserRegistry.parsers.each do |parser|
         result = parser.parse(xml)
-        break result if result
+        return result if result
       end
 
+      # if we got here, no parsers worked.
+      return nil
     end
   end
 

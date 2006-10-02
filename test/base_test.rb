@@ -44,7 +44,11 @@ class BaseTest < Test::Unit::TestCase
   # Attempts to parse a feed that Ruby's RSS can't handle.
   # SimpleRSS should provide the parsed feed.
   def test_parser_failover_order
+    assert_kind_of Feed, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
+  end
 
+  def test_all_parsers_fail
+    assert_nil FeedNormalizer::FeedNormalizer.parse("This isn't RSS or Atom!")
   end
 
 end

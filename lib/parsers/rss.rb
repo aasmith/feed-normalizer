@@ -11,11 +11,11 @@ module FeedNormalizer
       begin
         rss = parser.parse(xml)
       rescue Exception => e
-        puts "Parser #{parser} failed because #{e.message.gsub("\n",', ')}"
+        #puts "Parser #{parser} failed because #{e.message.gsub("\n",', ')}"
         return nil
       end
 
-      package(rss)
+      rss ? package(rss) : nil
     end
 
     # Fairly high priority; a fast and strict parser.

@@ -13,7 +13,7 @@ module FeedNormalizer
       begin
         atomrss = parser.parse(xml)
       rescue Exception => e
-        puts "Parser #{parser} failed because #{e.message.gsub("\n",', ')}"
+        #puts "Parser #{parser} failed because #{e.message.gsub("\n",', ')}"
         return nil
       end
 
@@ -63,7 +63,7 @@ module FeedNormalizer
 
         # custom entry elements
         feed_entry.id = atomrss_entry.guid || atomrss_entry[:id] # entries are a Hash..
-        feed_entry.copyright = atomrss_entry.copyright || atomrss.copyright
+        feed_entry.copyright = atomrss_entry.copyright || (atomrss.respond_to?(:copyright) ? atomrss.copyright : nil)
         feed_entry.content.body = atomrss_entry.content || atomrss_entry.description
 
         feed.entries << feed_entry
