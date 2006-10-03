@@ -28,7 +28,7 @@ module FeedNormalizer
     protected
 
     def self.package(atomrss)
-      feed = Feed.new
+      feed = Feed.new(self)
 
       # root elements
       feed_mapping = {

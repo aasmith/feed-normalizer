@@ -6,7 +6,7 @@ module FeedNormalizer
     attr_accessor :type, :body
 
     def initialize
-      self.type = :text
+      @type = :text
     end
 
     def to_s
@@ -19,9 +19,9 @@ module FeedNormalizer
     attr_accessor *ELEMENTS
 
     def initialize
-      self.urls = []
-      self.authors = []
-      self.content = Content.new
+      @urls = []
+      @authors = []
+      @content = Content.new
     end
 
     def url
@@ -32,14 +32,16 @@ module FeedNormalizer
   class Feed
     ELEMENTS = [:title, :description, :id, :last_updated, :copyright, :authors, :urls, :image, :generator, :items]
     attr_accessor *ELEMENTS
+    attr_accessor :parser
 
     alias :entries :items
 
-    def initialize
+    def initialize(wrapper)
       # set up associations (i.e. arrays where needed)
-      self.urls = []
-      self.authors = []
-      self.items = []
+      @urls = []
+      @authors = []
+      @items = []
+      @parser = wrapper.parser
     end
 
     def channel() self end

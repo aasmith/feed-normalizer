@@ -36,10 +36,13 @@ module FeedNormalizer
         src_functions = [src_functions].flatten # pack into array
 
         src_functions.each do |src_function|
-          if src.respond_to? src_function
-            value = src.send(src_function)
-            append_or_set!(value, dest, dest_function) if value
+          value = if src.respond_to?(src_function)
+            src.send(src_function)
+          elsif src.respond_to?(:has_key?)
+            src[src_function]
           end
+
+          append_or_set!(value, dest, dest_function) if value
         end
 
       end
@@ -87,6 +90,9 @@ module FeedNormalizer
     # otherwise all parsers in the ParserRegistry are attempted next, in
     # order of priority.
     def self.parse(xml, forced_parser=nil, try_others=false)
+
+      # Get a string ASAP, as multiple read()'s will start returning nil..
+      xml = xml.respond_to?(:read) ? xml.read : xml.to_s
 
       if forced_parser
         result = forced_parser.parse(xml)

@@ -51,4 +51,9 @@ class BaseTest < Test::Unit::TestCase
     assert_nil FeedNormalizer::FeedNormalizer.parse("This isn't RSS or Atom!")
   end
 
+  def test_correct_parser_used
+    assert_equal RSS::Parser, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20]).parser
+    assert_equal SimpleRSS, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10]).parser
+  end
+
 end

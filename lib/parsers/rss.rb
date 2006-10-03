@@ -26,7 +26,7 @@ module FeedNormalizer
     protected
 
     def self.package(rss)
-      feed = Feed.new
+      feed = Feed.new(self)
 
       # channel elements
       feed_mapping = {
