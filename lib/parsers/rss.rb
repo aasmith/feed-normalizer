@@ -36,13 +36,13 @@ module FeedNormalizer
         :description => :description,
         :copyright => :copyright,
         :authors => :managingEditor,
-        :last_updated => [:lastBuildDate, :pubDate]
+        :last_updated => [:lastBuildDate, :pubDate],
+        :id => :guid
       }
 
       map_functions!(feed_mapping, rss.channel, feed)
 
       # custom channel elements
-      feed.id = "#{rss.channel.link}"
       feed.image = (rss.channel.image ? rss.channel.image.url : nil)
 
       # item elements

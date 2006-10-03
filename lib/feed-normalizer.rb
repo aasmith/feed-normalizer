@@ -1,8 +1,6 @@
 require 'structures'
 
 module FeedNormalizer
-  VERSION = "1.0"
-
 
   # The root parser object. Every parser must extend this object.
   class Parser
@@ -75,6 +73,7 @@ module FeedNormalizer
       @@parsers << parser
     end
 
+    # Returns a list of currently registered parsers, in order of priority.
     def self.parsers
       @@parsers.sort_by { |parser| parser.priority }
     end
@@ -122,7 +121,7 @@ module FeedNormalizer
   # Load up the parsers
   Dir.open(parser_dir).each do |fn|
     next unless fn =~ /[.]rb$/
-    require parser_dir + "/#{fn}"
+    require "parsers/#{fn}"
   end
 
 end

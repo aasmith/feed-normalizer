@@ -56,4 +56,13 @@ class BaseTest < Test::Unit::TestCase
     assert_equal SimpleRSS, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10]).parser
   end
 
+  def test_sanity_check
+    XML_FILES.keys.each do |xml_file|
+      feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[xml_file])
+
+      assert [feed.title, feed.url, feed.entries.first.url].collect{|e| e.is_a?(String)}.all?, "Not everything was a String"
+      assert [feed.parser, feed.class].collect{|e| e.is_a?(Class)}.all?
+    end
+  end
+
 end

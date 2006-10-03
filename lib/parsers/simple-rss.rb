@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../vendor/simple-rss/lib/simple-rss'
+require 'simple-rss'
 
 module FeedNormalizer
 
