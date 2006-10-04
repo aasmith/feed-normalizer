@@ -19,6 +19,21 @@ module FeedNormalizer
       end
       nil
     end
+
+  end
+
+  module ElementEquality
+
+    def eql?(other)
+      self == (other)
+    end
+
+    def ==(other)
+      other.equal?(self) ||
+        (other.instance_of?(self.class) &&
+          self.class::ELEMENTS.collect{|el| instance_variable_get("@#{el}")==other.instance_variable_get("@#{el}")}.all?)
+    end
+
   end
 
   # Wraps content used in an Entry. type defaults to :text.
@@ -33,11 +48,22 @@ module FeedNormalizer
     def to_s
       body
     end
+
+    def eql?(other)
+      self == (other)
+    end
+
+    # Equal if the body is the same. Ignores type.
+    def ==(other)
+      other.equal?(self) ||
+        (other.instance_of?(self.class) &&
+          other.body == other.body)
+    end
   end
 
   # Represents a feed item entry.
   class Entry
-    include Singular
+    include Singular, ElementEquality
 
     ELEMENTS = [:content, :date_published, :urls, :description, :title, :id, :authors, :copyright]
     attr_accessor *ELEMENTS
@@ -47,11 +73,12 @@ module FeedNormalizer
       @authors = []
       @content = Content.new
     end
+
   end
 
   # Represents the root element of a feed.
   class Feed
-    include Singular
+    include Singular, ElementEquality
 
     ELEMENTS = [:title, :description, :id, :last_updated, :copyright, :authors, :urls, :image, :generator, :items]
     attr_accessor *ELEMENTS
