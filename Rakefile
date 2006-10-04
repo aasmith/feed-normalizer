@@ -16,7 +16,7 @@ task :package => [:test, :doc]
 
 spec = Gem::Specification.new do |s|
   s.name = "feed-normalizer"
-  s.version = "1.0.0"
+  s.version = "1.0.1"
   s.author = "Andrew A. Smith"
   s.email = "andy@tinnedfruit.org"
   s.homepage = "http://code.google.com/p/feed-normalizer/"

@@ -31,7 +31,7 @@ module FeedNormalizer
     def ==(other)
       other.equal?(self) ||
         (other.instance_of?(self.class) &&
-          self.class::ELEMENTS.collect{|el| instance_variable_get("@#{el}")==other.instance_variable_get("@#{el}")}.all?)
+          self.class::ELEMENTS.collect{|el| self.instance_variable_get("@#{el}")==other.instance_variable_get("@#{el}")}.all?)
     end
 
   end
@@ -57,7 +57,7 @@ module FeedNormalizer
     def ==(other)
       other.equal?(self) ||
         (other.instance_of?(self.class) &&
-          other.body == other.body)
+          self.body == other.body)
     end
   end
 
