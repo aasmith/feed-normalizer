@@ -70,6 +70,12 @@ class BaseTest < Test::Unit::TestCase
     assert_equal FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10]), FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
     assert_not_equal FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom03]), FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
     assert_not_equal FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20]), FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
+
+    XML_FILES.keys.each do |xml_file|
+      feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[xml_file])
+      assert_equal feed, Marshal.load(Marshal.dump(feed))
+    end
+
   end
 
 end
