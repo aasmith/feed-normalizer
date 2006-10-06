@@ -10,14 +10,12 @@ module FeedNormalizer
     # Example:
     # Object contains an array called 'alphas', which looks like [:a, :b, :c].
     # Call object.alpha and :a is returned.
-    def method_missing(name)
-      if name.to_s =~ /[^s]$/ # doesnt end with 's'
-        plural = :"#{name}s"
-        if self.respond_to?(plural)
-          return self.send(plural).first
-        end
-      end
-      nil
+    def method_missing(name, *args)
+      return self.send(:"#{name}s").first rescue nil
+    end
+
+    def respond_to?(x, y=false)
+      self.class::ELEMENTS.include?(x) || self.class::ELEMENTS.include?(:"#{x}s") || super(x, y)
     end
 
   end
