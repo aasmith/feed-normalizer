@@ -61,7 +61,7 @@ module FeedNormalizer
         map_functions!(item_mapping, rss_item, feed_entry)
 
         # custom item elements
-        feed_entry.id = rss_item.guid.content if rss_item.respond_to? :guid
+        feed_entry.id = rss_item.guid.content if rss_item.respond_to?(:guid) && rss_item.guid
         feed_entry.content.body = rss_item.description
         feed_entry.copyright = rss.copyright if rss_item.respond_to? :copyright
 

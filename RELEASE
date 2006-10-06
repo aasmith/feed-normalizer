@@ -1,13 +1,13 @@
 Steps to create a release:
 
  o Update Rakefile version
- o Tag release
-    svn copy https://feed-normalizer.googlecode.com/svn/trunk \
-             https://feed-normalizer.googlecode.com/svn/tags/RELEASE_[MAJOR]_[MINOR]_[REVISION]
  o Create package
     rake clobber
     rake package
- o Upload to rubyforge
+ o Tag release
+    svn copy https://feed-normalizer.googlecode.com/svn/trunk \
+             https://feed-normalizer.googlecode.com/svn/tags/RELEASE_[MAJOR]_[MINOR]_[REVISION]
+ o Upload gem and zip to rubyforge
  o Update RAA
  o Post rubyforge news
 
