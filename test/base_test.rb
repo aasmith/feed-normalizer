@@ -34,6 +34,7 @@ class BaseTest < Test::Unit::TestCase
 
   def test_ruby_rss_parser
     assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], RubyRssParser, false)
+    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], RubyRssParser, false)
   end
 
   def test_simple_rss_parser
@@ -60,7 +61,7 @@ class BaseTest < Test::Unit::TestCase
     XML_FILES.keys.each do |xml_file|
       feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[xml_file])
 
-      assert [feed.title, feed.url, feed.entries.first.url].collect{|e| e.is_a?(String)}.all?, "Not everything was a String"
+      assert [feed.title, feed.url, feed.entries.first.url].collect{|e| e.is_a?(String)}.all?, "Not everything was a String in #{xml_file}"
       assert [feed.parser, feed.class].collect{|e| e.is_a?(Class)}.all?
     end
   end

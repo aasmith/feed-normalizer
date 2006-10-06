@@ -40,10 +40,12 @@ module FeedNormalizer
         :id => :guid
       }
 
+      # make two passes, to catch all possible root elements
+      map_functions!(feed_mapping, rss, feed)
       map_functions!(feed_mapping, rss.channel, feed)
 
       # custom channel elements
-      feed.image = (rss.channel.image ? rss.channel.image.url : nil)
+      feed.image = rss.image ? rss.image.url : nil
 
       # item elements
       item_mapping = {
@@ -54,14 +56,14 @@ module FeedNormalizer
         :authors => :author
       }
 
-      rss.channel.items.each do |rss_item|
+      rss.items.each do |rss_item|
         feed_entry = Entry.new
         map_functions!(item_mapping, rss_item, feed_entry)
 
         # custom item elements
-        feed_entry.id = rss_item.guid.content
+        feed_entry.id = rss_item.guid.content if rss_item.respond_to? :guid
         feed_entry.content.body = rss_item.description
-        feed_entry.copyright = rss.channel.copyright
+        feed_entry.copyright = rss.copyright if rss_item.respond_to? :copyright
 
         feed.entries << feed_entry
       end

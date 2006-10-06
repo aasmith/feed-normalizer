@@ -16,13 +16,13 @@ task :package => [:test, :doc]
 
 spec = Gem::Specification.new do |s|
   s.name = "feed-normalizer"
-  s.version = "1.0.1"
+  s.version = "1.1.0"
   s.author = "Andrew A. Smith"
   s.email = "andy@tinnedfruit.org"
   s.homepage = "http://code.google.com/p/feed-normalizer/"
   s.platform = Gem::Platform::RUBY
   s.summary = "Extensible Ruby wrapper for Atom and RSS parsers"
-  s.files =  PKG_FILES
+  s.files = PKG_FILES
   s.require_path = "lib"
   s.autorequire = "feed-normalizer"
   s.has_rdoc = true
