@@ -32,6 +32,59 @@ module FeedNormalizer
           self.class::ELEMENTS.collect{|el| self.instance_variable_get("@#{el}")==other.instance_variable_get("@#{el}")}.all?)
     end
 
+    # Returns the difference between two Feed instances as a hash.
+    # Any top-level differences in the Feed object as presented as:
+    #
+    #  { :title => [content, other_content] }
+    #
+    # For differences at the items level, an array of hashes shows the diffs
+    # on a per-entry basis. Only entries that differ will contain a hash:
+    #
+    # { :items => [
+    #     {:title=>["An article tile", "A new article title"]},
+    #     {:title=>["one title", "a different title"]} ]}
+    #
+    # If the number of items in each feed are different, then the count of each
+    # is provided instead:
+    #
+    # { :items => [4,5] }
+    #
+    # This method can also be useful for human-readable feed comparison if
+    # its output is dumped to YAML.
+    def diff(other, elements = self.class::ELEMENTS)
+      diffs = {}
+
+      elements.each do |element|
+        if other.respond_to?(element)
+          self_value = self.send(element)
+          other_value = other.send(element)
+
+          next if self_value == other_value
+
+          diffs[element] = if other_value.respond_to?(:diff)
+            self_value.diff(other_value)
+
+          elsif other_value.is_a?(Enumerable) && other_value.all?{|v| v.respond_to?(:diff)}
+
+            if self_value.size != other_value.size
+              [self_value.size, other_value.size]
+            else
+              enum_diffs = []
+              self_value.each_with_index do |val, index|
+                enum_diffs << val.diff(other_value[index], val.class::ELEMENTS)
+              end
+              enum_diffs.reject{|h| h.empty?}
+            end
+
+          else
+            [other_value, self_value] unless other_value == self_value
+          end
+        end
+      end
+
+      diffs
+    end
+
   end
 
   # Wraps content used in an Entry. type defaults to :text.

@@ -71,12 +71,28 @@ class BaseTest < Test::Unit::TestCase
     assert_equal FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10]), FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
     assert_not_equal FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom03]), FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
     assert_not_equal FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20]), FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
+    assert_not_equal FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20]), FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20diff])
 
     XML_FILES.keys.each do |xml_file|
       feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[xml_file])
       assert_equal feed, Marshal.load(Marshal.dump(feed))
     end
+  end
 
+  def test_feed_diff
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20])
+
+    diff = feed.diff(FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20diff]))
+    diff_short = feed.diff(FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20diff_short]))
+    no_diff = feed.diff(feed)
+
+    assert diff.keys.all? {|key| [:title, :items].include?(key)}
+    assert_equal 2, diff[:items].size
+
+    assert diff_short.keys.all? {|key| [:title, :items].include?(key)}
+    assert_equal [3,2], diff_short[:items]
+
+    assert no_diff.empty?
   end
 
 end
