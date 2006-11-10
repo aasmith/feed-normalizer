@@ -90,9 +90,7 @@ module FeedNormalizer
 
     # gets the value returned from the method if it overriden, otherwise nil.
     def self.overridden_value(object, method)
-      # XXX: hack to find out if the id method is overriden
-      # Highly dependent upon Method's to_s :(
-      object.id if object.method(:id).to_s.match /SimpleRSS\#/
+      object.class.public_instance_methods(false).include? method
     end
 
   end
