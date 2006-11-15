@@ -9,13 +9,18 @@ class BaseTest < Test::Unit::TestCase
 
   XML_FILES = {}
 
-  def setup
-    data_dir = File.dirname(__FILE__) + '/data'
+  @@one_time = false
 
-    # Load up the xml files
-    Dir.open(data_dir).each do |fn|
-      next unless fn =~ /[.]xml$/
-      XML_FILES[fn.scan(/(.*)[.]/).to_s.to_sym] = File.read(data_dir + "/#{fn}")
+  def setup
+    unless @@one_time
+      @@one_time = true
+      data_dir = File.dirname(__FILE__) + '/data'
+
+      # Load up the xml files
+      Dir.open(data_dir).each do |fn|
+        next unless fn =~ /[.]xml$/
+        XML_FILES[fn.scan(/(.*)[.]/).to_s.to_sym] = File.read(data_dir + "/#{fn}")
+      end
     end
   end
 
@@ -25,21 +30,27 @@ class BaseTest < Test::Unit::TestCase
   end
 
   def test_force_parser
-    assert_kind_of Feed, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], RubyRssParser, true)
+    assert_kind_of Feed, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20],
+      :force_parser => RubyRssParser, :try_others => true)
   end
 
   def test_force_parser_exclusive
-    assert_kind_of Feed, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], RubyRssParser, false)
+    assert_kind_of Feed, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20],
+      :force_parser => RubyRssParser, :try_others => false)
   end
 
   def test_ruby_rss_parser
-    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], RubyRssParser, false)
-    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], RubyRssParser, false)
+    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20],
+      :force_parser => RubyRssParser, :try_others => false)
+    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10],
+      :force_parser => RubyRssParser, :try_others => false)
   end
 
   def test_simple_rss_parser
-    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], SimpleRssParser, false)
-    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10], SimpleRssParser, false)
+    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20],
+      :force_parser => SimpleRssParser, :try_others => false)
+    assert_kind_of Feed, feed=FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10],
+      :force_parser => SimpleRssParser, :try_others => false)
   end
 
   # Attempts to parse a feed that Ruby's RSS can't handle.
@@ -55,6 +66,28 @@ class BaseTest < Test::Unit::TestCase
   def test_correct_parser_used
     assert_equal RSS::Parser, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20]).parser
     assert_equal SimpleRSS, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10]).parser
+  end
+
+  def test_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20])
+
+    assert_equal "BBC News | Technology | UK Edition", feed.title
+    assert_equal ["http://news.bbc.co.uk/go/rss/-/1/hi/technology/default.stm"], feed.urls
+    assert_equal "MP3 player court order overturned", feed.entries.last.title
+    assert_equal "SanDisk puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.description
+    assert_equal "SanDisk puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.content
+  end
+
+  def test_simplerss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
+
+    assert_equal "~:caboose", feed.title
+    assert_equal "http://habtm.com/xml/atom10/feed.xml", feed.url
+    assert_equal "Starfish - Easy Distribution of Site Maintenance", feed.entries.last.title
+    assert_equal "urn:uuid:6c028f36-f87a-4f53-b7e3-1f943d2341f0", feed.entries.last.id
+
+    assert !feed.entries.last.description.include?("google fame")
+    assert feed.entries.last.content.include?("google fame")
   end
 
   def test_sanity_check
@@ -95,4 +128,96 @@ class BaseTest < Test::Unit::TestCase
     assert no_diff.empty?
   end
 
+  def test_unescape
+    assert_equal "' ' &deg;", HtmlCleaner.unescapeHTML("&apos; &#39; &deg;")
+    assert_equal "\" &deg;", HtmlCleaner.unescapeHTML("&quot; &deg;")
+    assert_equal "heavily subnet&#8217;d network,", HtmlCleaner.unescapeHTML("heavily subnet&#8217;d network,")
+  end
+
+  def test_add_entities
+    assert_equal "x &gt; y", HtmlCleaner.add_entities("x > y")
+    assert_equal "1 &amp; 2", HtmlCleaner.add_entities("1 & 2")
+    assert_equal "&amp; &#123; &acute; &#x123;", HtmlCleaner.add_entities("& &#123; &acute; &#x123;")
+    assert_equal "&amp; &#123; &ACUTE; &#X123A; &#x80f;", HtmlCleaner.add_entities("& &#123; &ACUTE; &#X123A; &#x80f;")
+    assert_equal "heavily subnet&#8217;d network,", HtmlCleaner.add_entities("heavily subnet&#8217;d network,")
+  end
+
+  def test_html_clean
+    assert_equal "", HtmlCleaner.clean("")
+
+    assert_equal "<p>foo &gt; *</p>", HtmlCleaner.clean("<p>foo > *</p>")
+    assert_equal "<p>foo &gt; *</p>", HtmlCleaner.clean("<p>foo &gt; *</p>")
+
+    assert_equal "<p>para</p>", HtmlCleaner.clean("<p foo=bar>para</p>")
+
+    assert_equal "<p>para</p>", HtmlCleaner.clean("<p>para</p></notvalid>")
+    assert_equal "<p>para</p>", HtmlCleaner.clean("<p>para</p></body>")
+
+    assert_equal "<p>para</p>", HtmlCleaner.clean("<p>para</p><plaintext>")
+    assert_equal "<p>para</p>", HtmlCleaner.clean("<p>para</p><object><param></param></object>")
+    assert_equal "<p>para</p>", HtmlCleaner.clean("<p>para</p><iframe src='http://evil.example.org'></iframe>")
+    assert_equal "<p>para</p>", HtmlCleaner.clean("<p>para</p><iframe src='http://evil.example.org'>")
+
+    assert_equal "<p>para</p>", HtmlCleaner.clean("<p>para</p><invalid>invalid</invalid>")
+
+    assert_equal "<a href=\"http://example.org\">para</a>", HtmlCleaner.clean("<a href='http://example.org'>para</a>")
+    assert_equal "<a href=\"http://example.org/proc?a&amp;b\">para</a>", HtmlCleaner.clean("<a href='http://example.org/proc?a&b'>para</a>")
+
+    assert_equal "<p>two</p>", HtmlCleaner.clean("<p>para</p><body><p>two</p></body>")
+    assert_equal "<p>two</p>", HtmlCleaner.clean("<p>para</p><body><p>two</p>")
+    assert_equal "<p>para</p>&lt;bo /dy&gt;<p>two</p>", HtmlCleaner.clean("<p>para</p><bo /dy><p>two</p></body>")
+    assert_equal "<p>para</p>&lt;bo\\/dy&gt;<p>two</p>", HtmlCleaner.clean("<p>para</p><bo\\/dy><p>two</p></body>")
+    assert_equal "<p>para</p><p>two</p>", HtmlCleaner.clean("<p>para</p><body/><p>two</p></body>")
+
+    assert_equal "<p>one &amp; two</p>", HtmlCleaner.clean(HtmlCleaner.clean("<p>one & two</p>"))
+
+    assert_equal "<p id=\"p\">para</p>", HtmlCleaner.clean("<p id=\"p\" ignore=\"this\">para</p>")
+    assert_equal "<p id=\"p\">para</p>", HtmlCleaner.clean("<p id=\"p\" onclick=\"this\">para</p>")
+
+    assert_equal "<img src=\"http://example.org/pic\" />", HtmlCleaner.clean("<img src=\"http://example.org/pic\" />")
+    assert_equal "<img />", HtmlCleaner.clean("<img src=\"jav a script:call()\" />")
+
+    assert_equal "what's new", HtmlCleaner.clean("what&#000039;s new")
+    assert_equal "&quot;what's new?&quot;", HtmlCleaner.clean("\"what&apos;s new?\"")
+    assert_equal "&quot;what's new?&quot;", HtmlCleaner.clean("&quot;what&apos;s new?&quot;")
+
+    # Real-world examples from selected feeds
+    assert_equal "I have a heavily subnet&#8217;d/vlan&#8217;d network,", HtmlCleaner.clean("I have a heavily subnet&#8217;d/vlan&#8217;d network,")
+
+    assert_equal "<pre><blockquote>&lt;%= start_form_tag :action =&gt; &quot;create&quot; %&gt;</blockquote></pre>",
+                 HtmlCleaner.clean("<pre><blockquote>&lt;%= start_form_tag :action => \"create\" %></blockquote></pre>")
+
+    assert_equal "<a href=\"http://www.mcall.com/news/local/all-smashedmachine1107-cn,0,1574203.story?coll=all-news-hed\">[link]</a><a href=\"http://reddit.com/info/pyhc/comments\">[more]</a>",
+                 HtmlCleaner.clean("&lt;a href=\"http://www.mcall.com/news/local/all-smashedmachine1107-cn,0,1574203.story?coll=all-news-hed\"&gt;[link]&lt;/a&gt;&lt;a href=\"http://reddit.com/info/pyhc/comments\"&gt;[more]&lt;/a&gt;")
+  end
+
+  def test_html_flatten
+    assert_equal "", HtmlCleaner.flatten("")
+
+    assert_equal "hello", HtmlCleaner.flatten("hello")
+    assert_equal "hello world", HtmlCleaner.flatten("hello\nworld")
+
+    assert_equal "A &gt; B : C", HtmlCleaner.flatten("A > B : C")
+    assert_equal "what's new", HtmlCleaner.flatten("what&#39;s new")
+    assert_equal "&quot;what's new?&quot;", HtmlCleaner.flatten("\"what&apos;s new?\"")
+
+    assert_equal "we&#8217;ve got &lt;a hre", HtmlCleaner.flatten("we&#8217;ve got <a hre")
+
+    assert_equal "http://example.org", HtmlCleaner.flatten("http://example.org")
+    assert_equal "http://example.org/proc?a&amp;b", HtmlCleaner.flatten("http://example.org/proc?a&b")
+
+    assert_equal "&quot;what's new?&quot;", HtmlCleaner.flatten(HtmlCleaner.flatten("\"what&apos;s new?\""))
+  end
+
+  def test_dodgy_uri
+    # All of these javascript urls work in IE6.
+    assert HtmlCleaner.dodgy_uri?("javascript:alert('HI');")
+    assert HtmlCleaner.dodgy_uri?(" &#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116; \n :alert('HI');")
+    assert HtmlCleaner.dodgy_uri?("JaVaScRiPt:alert('HI');")
+    assert HtmlCleaner.dodgy_uri?("JaV   \naSc\nRiPt:alert('HI');")
+
+    assert_nil HtmlCleaner.dodgy_uri?("http://example.org")
+  end
+
 end
+

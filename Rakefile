@@ -27,6 +27,7 @@ spec = Gem::Specification.new do |s|
   s.autorequire = "feed-normalizer"
   s.has_rdoc = true
   s.add_dependency  "simple-rss", ">= 1.1"
+  s.add_dependency  "hpricot", ">= 0.4"
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

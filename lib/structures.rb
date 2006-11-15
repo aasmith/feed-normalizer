@@ -87,42 +87,27 @@ module FeedNormalizer
 
   end
 
-  # Wraps content used in an Entry. type defaults to :text.
-  class Content
-    TYPE = [:text, :html, :xhtml]
-    attr_accessor :type, :body
-
-    def initialize
-      @type = :text
-    end
-
-    def to_s
-      body
-    end
-
-    def eql?(other)
-      self == (other)
-    end
-
-    # Equal if the body is the same. Ignores type.
-    def ==(other)
-      other.equal?(self) ||
-        (other.instance_of?(self.class) &&
-          self.body == other.body)
-    end
-  end
 
   # Represents a feed item entry.
   class Entry
     include Singular, ElementEquality
 
-    ELEMENTS = [:content, :date_published, :urls, :description, :title, :id, :authors, :copyright]
+    # Elements that can contain HTML fragments.
+    HTML_ELEMENTS = [:content, :description, :title]
+
+    SIMPLE_ELEMENTS = [:date_published, :urls, :id, :authors, :copyright]
+
+    ELEMENTS = HTML_ELEMENTS + SIMPLE_ELEMENTS
+
     attr_accessor *ELEMENTS
 
     def initialize
       @urls = []
       @authors = []
-      @content = Content.new
+    end
+
+    def clean!
+
     end
 
   end
@@ -131,7 +116,17 @@ module FeedNormalizer
   class Feed
     include Singular, ElementEquality
 
-    ELEMENTS = [:title, :description, :id, :last_updated, :copyright, :authors, :urls, :image, :generator, :items]
+    # Elements that can contain HTML fragments.
+    HTML_ELEMENTS = [:title, :description]
+
+    # Elements that contain 'plain' Strings, with HTML escaped.
+    SIMPLE_ELEMENTS = [:id, :last_updated, :copyright, :authors, :urls, :image, :generator]
+
+    # Elements that contain both HTML and escaped HTML.
+    BLENDED_ELEMENTS = [:items]
+
+    ELEMENTS = HTML_ELEMENTS + SIMPLE_ELEMENTS + BLENDED_ELEMENTS
+
     attr_accessor *ELEMENTS
     attr_accessor :parser
 
@@ -146,6 +141,21 @@ module FeedNormalizer
     end
 
     def channel() self end
+
+    # Cleans the elements of this Feed, and any Entries below it.
+    #
+    # Only allow tags in whitelist. Always parse the html with a parser and delete
+    # all tags that arent on the list.
+    #
+    # For feed elements that can contain HTML:
+    # - feed.(title|description)
+    # - feed.entries[n].(title|description|content)
+    #
+    def clean!
+      # flatten simple elements
+      # clean html elements
+      # each entry, call clean!
+    end
   end
 
 end

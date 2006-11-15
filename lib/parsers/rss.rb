@@ -52,6 +52,7 @@ module FeedNormalizer
         :date_published => :pubDate,
         :urls => :link,
         :description => :description,
+        :content => :description,
         :title => :title,
         :authors => :author
       }
@@ -62,7 +63,6 @@ module FeedNormalizer
 
         # custom item elements
         feed_entry.id = rss_item.guid.content if rss_item.respond_to?(:guid) && rss_item.guid
-        feed_entry.content.body = rss_item.description
         feed_entry.copyright = rss.copyright if rss_item.respond_to? :copyright
 
         feed.entries << feed_entry

@@ -1,4 +1,5 @@
 require 'structures'
+require 'html-cleaner'
 
 module FeedNormalizer
 
@@ -88,17 +89,17 @@ module FeedNormalizer
     # used first, and if try_others is false, it is the only parser used,
     # otherwise all parsers in the ParserRegistry are attempted next, in
     # order of priority.
-    def self.parse(xml, forced_parser=nil, try_others=false)
+    def self.parse(xml, opts = {})
 
       # Get a string ASAP, as multiple read()'s will start returning nil..
       xml = xml.respond_to?(:read) ? xml.read : xml.to_s
 
-      if forced_parser
-        result = forced_parser.parse(xml)
+      if opts[:force_parser]
+        result = opts[:force_parser].parse(xml)
 
         if result
           return result
-        elsif !try_others
+        elsif !opts[:try_others]
           return nil
         else
           # fall through and continue with other parsers

@@ -53,6 +53,7 @@ module FeedNormalizer
         :date_published => [:pubDate, :published],
         :urls => :link,
         :description => [:description, :summary],
+        :content => [:content, :description],
         :title => :title,
         :authors => [:author, :contributor]
       }
@@ -64,7 +65,6 @@ module FeedNormalizer
         # custom entry elements
         feed_entry.id = atomrss_entry.guid || atomrss_entry[:id] # entries are a Hash..
         feed_entry.copyright = atomrss_entry.copyright || (atomrss.respond_to?(:copyright) ? atomrss.copyright : nil)
-        feed_entry.content.body = atomrss_entry.content || atomrss_entry.description
 
         feed.entries << feed_entry
       end
