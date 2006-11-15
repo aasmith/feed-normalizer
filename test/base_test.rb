@@ -143,6 +143,7 @@ class BaseTest < Test::Unit::TestCase
     assert_equal "<p>foo &gt; *</p>", HtmlCleaner.clean("<p>foo &gt; *</p>")
 
     assert_equal "<p>para</p>", HtmlCleaner.clean("<p foo=bar>para</p>")
+    assert_equal "<p>para</p> outsider", HtmlCleaner.clean("<p foo=bar>para</p> outsider")
 
     assert_equal "<p>para</p>", HtmlCleaner.clean("<p>para</p></notvalid>")
     assert_equal "<p>para</p>", HtmlCleaner.clean("<p>para</p></body>")
@@ -191,11 +192,11 @@ class BaseTest < Test::Unit::TestCase
                  HtmlCleaner.clean("<a href=\"https://bugzilla.mozilla.org/attachment.cgi?id=&action=force_internal_error<script>alert(document.cookie)</script>\">link</a>")
     assert_equal "<img src=\"doesntexist.jpg\" />", HtmlCleaner.clean("<img src='doesntexist.jpg' onerror='alert(document.cookie)'/>")
 
-    # This doesnt come out as I would like, because hpricot sees things differently, but the result is still safe.
+    # This doesnt come out as I would like, but the result is still safe.
+    # (Apparently, this would work in Gecko.)
     assert HtmlCleaner.clean("<p onclick!\#$%&()*~+-_.,:;?@[/|\\]^=alert(\"XSS\")>para</p>") !~ /\<\>/
 
-    # TODO: Must remove comments from the parse tree
-    #assert_equal "", HtmlCleaner.clean("<!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]-->")
+    assert_equal "", HtmlCleaner.clean("<!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]-->")
   end
 
   def test_html_flatten

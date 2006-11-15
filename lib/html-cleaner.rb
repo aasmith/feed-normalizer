@@ -81,7 +81,9 @@ module FeedNormalizer
 
         doc.traverse_text {|t| t.set(add_entities(t.to_s))}
 
-        doc.to_s
+        # Return the tree, without comments. Ugly way of removing comments,
+        # but can;t see a way to do this in Hpricot yet.
+        doc.to_s.gsub(/<\!--.*-->/mi, '')
       end
 
       # For all other feed elements:
