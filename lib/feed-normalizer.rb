@@ -97,13 +97,8 @@ module FeedNormalizer
       if opts[:force_parser]
         result = opts[:force_parser].parse(xml)
 
-        if result
-          return result
-        elsif !opts[:try_others]
-          return nil
-        else
-          # fall through and continue with other parsers
-        end
+        return result if result
+        return nil if opts[:try_others] == false
       end
 
       ParserRegistry.parsers.each do |parser|

@@ -39,6 +39,10 @@ module FeedNormalizer
       href src cite usemap longdesc
     )
 
+    DODGY_URI_SCHEMES = %w(
+      javascript vbscript mocha livescript data
+    )
+
     class << self
 
       # Do this:
@@ -102,8 +106,32 @@ module FeedNormalizer
 
       # Returns true if the given string contains a suspicious URL,
       # i.e. a javascript link.
-      def dodgy_uri?(str)
-        unescapeHTML(str) =~ /\A(\s*)j(\s*)a(\s*)v(\s*)a(\s*)s(\s*)c(\s*)r(\s*)i(\s*)p(\s*)t(\s*):/mi
+      #
+      # This method rejects javascript, vbscript, livescript, mocha and data URLs.
+      # It *could* be refined to only deny dangerous data URLs, however.
+      def dodgy_uri?(uri)
+
+        # special case for consecutive poorly-formed entities
+        # if these occur back-to-back, to back-to-back with only space between
+        # them *anywhere* within the string, then throw it out.
+        return true if (uri =~ /&\#(\d+|x[0-9a-f]+)[&\000-\037\177\s]+/mi)
+
+        # Try escaping as both HTML or URI encodings, and then trying
+        # each scheme regexp on each
+        [unescapeHTML(uri), CGI.unescape(uri)].each do |unesc_uri|
+          DODGY_URI_SCHEMES.each do |scheme|
+
+            regexp = "#{scheme}:".gsub(/./) do |char|
+              "([\000-\037\177\s]*)#{char}"
+            end
+
+            # regexp looks something like
+            # /\A([\000-\037\177\s]*)j([\000-\037\177\s]*)a([\000-\037\177\s]*)v([\000-\037\177\s]*)a([\000-\037\177\s]*)s([\000-\037\177\s]*)c([\000-\037\177\s]*)r([\000-\037\177\s]*)i([\000-\037\177\s]*)p([\000-\037\177\s]*)t([\000-\037\177\s]*):/mi
+            return true if (unesc_uri =~ %r{\A#{regexp}}mi)
+          end
+        end
+
+        nil
       end
 
       # unescape's HTML. If xml is true, also converts XML-only named entities to HTML.

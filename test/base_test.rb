@@ -9,21 +9,13 @@ class BaseTest < Test::Unit::TestCase
 
   XML_FILES = {}
 
-  @@one_time = false
+  data_dir = File.dirname(__FILE__) + '/data'
 
-  def setup
-    unless @@one_time
-      @@one_time = true
-      data_dir = File.dirname(__FILE__) + '/data'
-
-      # Load up the xml files
-      Dir.open(data_dir).each do |fn|
-        next unless fn =~ /[.]xml$/
-        XML_FILES[fn.scan(/(.*)[.]/).to_s.to_sym] = File.read(data_dir + "/#{fn}")
-      end
-    end
+  # Load up the xml files
+  Dir.open(data_dir).each do |fn|
+    next unless fn =~ /[.]xml$/
+    XML_FILES[fn.scan(/(.*)[.]/).to_s.to_sym] = File.read(data_dir + "/#{fn}")
   end
-
 
   def test_basic_parse
     assert_kind_of Feed, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20])
@@ -53,10 +45,12 @@ class BaseTest < Test::Unit::TestCase
       :force_parser => SimpleRssParser, :try_others => false)
   end
 
-  # Attempts to parse a feed that Ruby's RSS can't handle.
-  # SimpleRSS should provide the parsed feed.
   def test_parser_failover_order
-    assert_kind_of Feed, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
+    assert_equal SimpleRSS, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10], :force_parser => RubyRssParser).parser
+  end
+
+  def test_force_parser_fail
+    assert_nil FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10], :force_parser => RubyRssParser, :try_others => false)
   end
 
   def test_all_parsers_fail
@@ -189,6 +183,19 @@ class BaseTest < Test::Unit::TestCase
 
     assert_equal "<a href=\"http://www.mcall.com/news/local/all-smashedmachine1107-cn,0,1574203.story?coll=all-news-hed\">[link]</a><a href=\"http://reddit.com/info/pyhc/comments\">[more]</a>",
                  HtmlCleaner.clean("&lt;a href=\"http://www.mcall.com/news/local/all-smashedmachine1107-cn,0,1574203.story?coll=all-news-hed\"&gt;[link]&lt;/a&gt;&lt;a href=\"http://reddit.com/info/pyhc/comments\"&gt;[more]&lt;/a&gt;")
+
+
+    # Various exploits from the past
+    assert_equal "", HtmlCleaner.clean("<_img foo=\"<IFRAME width='80%' height='400' src='http://alive.znep.com/~marcs/passport/grabit.html'></IFRAME>\" >")
+    assert_equal "<a href=\"https://bugzilla.mozilla.org/attachment.cgi?id=&amp;action=force_internal_error&lt;script&gt;alert(document.cookie)&lt;/script&gt;\">link</a>",
+                 HtmlCleaner.clean("<a href=\"https://bugzilla.mozilla.org/attachment.cgi?id=&action=force_internal_error<script>alert(document.cookie)</script>\">link</a>")
+    assert_equal "<img src=\"doesntexist.jpg\" />", HtmlCleaner.clean("<img src='doesntexist.jpg' onerror='alert(document.cookie)'/>")
+
+    # This doesnt come out as I would like, because hpricot sees things differently, but the result is still safe.
+    assert HtmlCleaner.clean("<p onclick!\#$%&()*~+-_.,:;?@[/|\\]^=alert(\"XSS\")>para</p>") !~ /\<\>/
+
+    # TODO: Must remove comments from the parse tree
+    #assert_equal "", HtmlCleaner.clean("<!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]-->")
   end
 
   def test_html_flatten
@@ -216,7 +223,35 @@ class BaseTest < Test::Unit::TestCase
     assert HtmlCleaner.dodgy_uri?("JaVaScRiPt:alert('HI');")
     assert HtmlCleaner.dodgy_uri?("JaV   \naSc\nRiPt:alert('HI');")
 
+    # entities lacking ending ';'
+    # This only works if they're all packed together without spacing.
+    assert HtmlCleaner.dodgy_uri?("&#106&#97&#118&#97&#115&#99&#114&#105&#112&#116&#58&#97&#108&#101&#114&#116&#40&#39&#105&#109&#103&#45&#111&#98&#45&#50&#39&#41")
+    assert HtmlCleaner.dodgy_uri?("&#106&#97&#118&#97&#115&#99&#114&#105&#112&#116&#58&#97&#108&#101&#114&#116&#40&#39&#105&#109&#103&#45&#111&#98&#45&#50&#39 &#41 ; ")
+    # catch extra spacing anyway.. support for this is possible, depending where the spaces are.
+    assert HtmlCleaner.dodgy_uri?("&#106 &#97 &#118 &#97 &#115 &#99 &#114 &#105 &#112 &#116 &#58 &#97 &#108 &#101 &#114 &#116 &#40 &#39 &#105 &#109 &#103 &#45 &#111 &#98 &#45 &#50 &#39 &#41 ; ")
+
+    # url-encoded
+    assert HtmlCleaner.dodgy_uri?("%6A%61%76%61%73%63%72%69%70%74%3A%61%6C%65%72%74%28%27%69%6D%67%2D%6F%62%2D%33%27%29")
+
+    # Other evil schemes
+    assert HtmlCleaner.dodgy_uri?("vbscript:MsgBox(\"hi\")")
+    assert HtmlCleaner.dodgy_uri?("mocha:alert('hi')")
+    assert HtmlCleaner.dodgy_uri?("livescript:alert('hi')")
+    assert HtmlCleaner.dodgy_uri?("data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K")
+
+    # Various non-printing chars
+    assert HtmlCleaner.dodgy_uri?("javas\0cript:foo()")
+    assert HtmlCleaner.dodgy_uri?(" &#14; javascript:foo()")
+    assert HtmlCleaner.dodgy_uri?("jav&#x0A;ascript:foo()")
+    assert HtmlCleaner.dodgy_uri?("jav&#x09;ascript:foo()")
+
+    # The Good
     assert_nil HtmlCleaner.dodgy_uri?("http://example.org")
+    assert_nil HtmlCleaner.dodgy_uri?("http://example.org/foo.html")
+    assert_nil HtmlCleaner.dodgy_uri?("http://example.org/foo.cgi?x=y&a=b")
+    assert_nil HtmlCleaner.dodgy_uri?("http://example.org/foo.cgi?x=y&amp;a=b")
+    assert_nil HtmlCleaner.dodgy_uri?("http://example.org/foo.cgi?x=y&#38;a=b")
+    assert_nil HtmlCleaner.dodgy_uri?("http://example.org/foo.cgi?x=y&#x56;a=b")
   end
 
 end
