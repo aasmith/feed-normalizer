@@ -125,6 +125,7 @@ class BaseTest < Test::Unit::TestCase
   def test_unescape
     assert_equal "' ' &deg;", HtmlCleaner.unescapeHTML("&apos; &#39; &deg;")
     assert_equal "\" &deg;", HtmlCleaner.unescapeHTML("&quot; &deg;")
+    assert_equal "\"\"\"\"", HtmlCleaner.unescapeHTML("&#34;&#000000000000000000034;&#x22;&#x0000022;")
     assert_equal "heavily subnet&#8217;d network,", HtmlCleaner.unescapeHTML("heavily subnet&#8217;d network,")
   end
 
@@ -191,12 +192,17 @@ class BaseTest < Test::Unit::TestCase
     assert_equal "<a href=\"https://bugzilla.mozilla.org/attachment.cgi?id=&amp;action=force_internal_error&lt;script&gt;alert(document.cookie)&lt;/script&gt;\">link</a>",
                  HtmlCleaner.clean("<a href=\"https://bugzilla.mozilla.org/attachment.cgi?id=&action=force_internal_error<script>alert(document.cookie)</script>\">link</a>")
     assert_equal "<img src=\"doesntexist.jpg\" />", HtmlCleaner.clean("<img src='doesntexist.jpg' onerror='alert(document.cookie)'/>")
+    assert_equal "<img src=\"'doesntexist.jpg\" />", HtmlCleaner.clean("<img src=\"'doesntexist.jpg\" onmouseover=\"alert('img-ob-11');''\"/>")
+    assert_equal "&lt;IMG &quot;&quot;&quot;&gt;&quot;&gt;", HtmlCleaner.clean("<IMG \"\"\"><SCRIPT>alert(\"XSS\")</SCRIPT>\">")
 
     # This doesnt come out as I would like, but the result is still safe.
     # (Apparently, this would work in Gecko.)
     assert HtmlCleaner.clean("<p onclick!\#$%&()*~+-_.,:;?@[/|\\]^=alert(\"XSS\")>para</p>") !~ /\<\>/
+    assert_equal "&lt;SCRIPT/XSS SRC=&quot;http://ha.ckers.org/xss.js&quot;&gt;", HtmlCleaner.clean("<SCRIPT/XSS SRC=\"http://ha.ckers.org/xss.js\"></SCRIPT>")
 
     assert_equal "", HtmlCleaner.clean("<!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]-->")
+    assert_equal "<p></p>", HtmlCleaner.clean("<p><!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]--></p>")
+    assert_equal "<p>hi</p><p></p>", HtmlCleaner.clean("<p>hi</p><p><!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]--></p>")
   end
 
   def test_html_flatten
@@ -230,6 +236,9 @@ class BaseTest < Test::Unit::TestCase
     assert HtmlCleaner.dodgy_uri?("&#106&#97&#118&#97&#115&#99&#114&#105&#112&#116&#58&#97&#108&#101&#114&#116&#40&#39&#105&#109&#103&#45&#111&#98&#45&#50&#39 &#41 ; ")
     # catch extra spacing anyway.. support for this is possible, depending where the spaces are.
     assert HtmlCleaner.dodgy_uri?("&#106 &#97 &#118 &#97 &#115 &#99 &#114 &#105 &#112 &#116 &#58 &#97 &#108 &#101 &#114 &#116 &#40 &#39 &#105 &#109 &#103 &#45 &#111 &#98 &#45 &#50 &#39 &#41 ; ")
+    assert HtmlCleaner.dodgy_uri?("&#x06a &#97 &#118 &#97 &#115 &#99 &#114 &#105 &#112 &#116 &#58 &#97 &#108 &#101 &#114 &#116 &#40 &#39 &#105 &#109 &#103 &#45 &#111 &#98 &#45 &#50 &#39 &#41 ; ")
+    assert HtmlCleaner.dodgy_uri?("&#106avascript")
+    assert HtmlCleaner.dodgy_uri?("&#x06a;avascript")
 
     # url-encoded
     assert HtmlCleaner.dodgy_uri?("%6A%61%76%61%73%63%72%69%70%74%3A%61%6C%65%72%74%28%27%69%6D%67%2D%6F%62%2D%33%27%29")
@@ -245,6 +254,7 @@ class BaseTest < Test::Unit::TestCase
     assert HtmlCleaner.dodgy_uri?(" &#14; javascript:foo()")
     assert HtmlCleaner.dodgy_uri?("jav&#x0A;ascript:foo()")
     assert HtmlCleaner.dodgy_uri?("jav&#x09;ascript:foo()")
+    assert HtmlCleaner.dodgy_uri?("jav\tascript:foo()")
 
     # The Good
     assert_nil HtmlCleaner.dodgy_uri?("http://example.org")

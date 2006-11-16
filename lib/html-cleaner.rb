@@ -82,7 +82,7 @@ module FeedNormalizer
         doc.traverse_text {|t| t.set(add_entities(t.to_s))}
 
         # Return the tree, without comments. Ugly way of removing comments,
-        # but can;t see a way to do this in Hpricot yet.
+        # but can't see a way to do this in Hpricot yet.
         doc.to_s.gsub(/<\!--.*-->/mi, '')
       end
 
@@ -113,10 +113,9 @@ module FeedNormalizer
       # It *could* be refined to only deny dangerous data URLs, however.
       def dodgy_uri?(uri)
 
-        # special case for consecutive poorly-formed entities
-        # if these occur back-to-back, to back-to-back with only space between
-        # them *anywhere* within the string, then throw it out.
-        return true if (uri =~ /&\#(\d+|x[0-9a-f]+)[&\000-\037\177\s]+/mi)
+        # special case for poorly-formed entities (missing ';')
+        # if these occur *anywhere* within the string, then throw it out.
+        return true if (uri =~ /&\#(\d+|x[0-9a-f]+)[^;\d]/mi)
 
         # Try escaping as both HTML or URI encodings, and then trying
         # each scheme regexp on each
@@ -136,7 +135,7 @@ module FeedNormalizer
         nil
       end
 
-      # unescape's HTML. If xml is true, also converts XML-only named entities to HTML.
+      # unescapes HTML. If xml is true, also converts XML-only named entities to HTML.
       def unescapeHTML(str, xml = true)
         CGI.unescapeHTML(xml ? str.gsub("&apos;", "&#39;") : str)
       end
@@ -178,9 +177,9 @@ module Enumerable
 end
 
 # http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/207625
-# Subject: A simple Hpricot text setter
-# From: Chris Gehlker <canyonrat mac.com>
-# Date: Fri, 11 Aug 2006 03:19:13 +0900
+#  Subject: A simple Hpricot text setter
+#  From: Chris Gehlker <canyonrat mac.com>
+#  Date: Fri, 11 Aug 2006 03:19:13 +0900
 class Hpricot::Text
   def set(string)
     @content = string
