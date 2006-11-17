@@ -19,7 +19,7 @@ spec = Gem::Specification.new do |s|
   s.version = "1.1.0"
   s.author = "Andrew A. Smith"
   s.email = "andy@tinnedfruit.org"
-  s.homepage = "http://code.google.com/p/feed-normalizer/"
+  s.homepage = "http://feed-normalizer.rubyforge.org/"
   s.platform = Gem::Platform::RUBY
   s.summary = "Extensible Ruby wrapper for Atom and RSS parsers"
   s.files = PKG_FILES
@@ -36,7 +36,7 @@ end
 
 Rake::TestTask.new do |t|
   t.libs << "test"
-  t.test_files = FileList['test/*_test.rb']
+  t.test_files = ['test/ts_all.rb']
   t.verbose = true
 end
 

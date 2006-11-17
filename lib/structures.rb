@@ -11,7 +11,7 @@ module FeedNormalizer
     # Object contains an array called 'alphas', which looks like [:a, :b, :c].
     # Call object.alpha and :a is returned.
     def method_missing(name, *args)
-      return self.send(:"#{name}s").first rescue nil
+      return self.send(:"#{name}s").first rescue super(name, *args)
     end
 
     def respond_to?(x, y=false)
@@ -87,17 +87,44 @@ module FeedNormalizer
 
   end
 
+  module ElementCleaner
+    # Recursively cleans all elements in place.
+    #
+    # Only allow tags in whitelist. Always parse the html with a parser and delete
+    # all tags that arent on the list.
+    #
+    # For feed elements that can contain HTML:
+    # - feed.(title|description)
+    # - feed.entries[n].(title|description|content)
+    #
+    def clean!
+      self.class::SIMPLE_ELEMENTS.each do |element|
+        val = self.send(element)
+
+        send("#{element}=", (val.is_a?(Array) ?
+          val.collect{|v| HtmlCleaner.flatten(v.to_s)} : HtmlCleaner.flatten(val.to_s)))
+      end
+
+      self.class::HTML_ELEMENTS.each do |element|
+        send("#{element}=", HtmlCleaner.clean(self.send(element).to_s))
+      end
+
+      self.class::BLENDED_ELEMENTS.each do |element|
+        self.send(element).collect{|v| v.clean!}
+      end
+    end
+  end
+
 
   # Represents a feed item entry.
   class Entry
-    include Singular, ElementEquality
+    include Singular, ElementEquality, ElementCleaner
 
-    # Elements that can contain HTML fragments.
     HTML_ELEMENTS = [:content, :description, :title]
-
     SIMPLE_ELEMENTS = [:date_published, :urls, :id, :authors, :copyright]
+    BLENDED_ELEMENTS = []
 
-    ELEMENTS = HTML_ELEMENTS + SIMPLE_ELEMENTS
+    ELEMENTS = HTML_ELEMENTS + SIMPLE_ELEMENTS + BLENDED_ELEMENTS
 
     attr_accessor *ELEMENTS
 
@@ -106,15 +133,11 @@ module FeedNormalizer
       @authors = []
     end
 
-    def clean!
-
-    end
-
   end
 
   # Represents the root element of a feed.
   class Feed
-    include Singular, ElementEquality
+    include Singular, ElementEquality, ElementCleaner
 
     # Elements that can contain HTML fragments.
     HTML_ELEMENTS = [:title, :description]
@@ -142,20 +165,6 @@ module FeedNormalizer
 
     def channel() self end
 
-    # Cleans the elements of this Feed, and any Entries below it.
-    #
-    # Only allow tags in whitelist. Always parse the html with a parser and delete
-    # all tags that arent on the list.
-    #
-    # For feed elements that can contain HTML:
-    # - feed.(title|description)
-    # - feed.entries[n].(title|description|content)
-    #
-    def clean!
-      # flatten simple elements
-      # clean html elements
-      # each entry, call clean!
-    end
   end
 
 end
