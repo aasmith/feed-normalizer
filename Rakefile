@@ -36,7 +36,7 @@ end
 
 Rake::TestTask.new do |t|
   t.libs << "test"
-  t.test_files = ['test/ts_all.rb']
+  t.test_files = ['test/test_all.rb']
   t.verbose = true
 end
 
@@ -46,5 +46,14 @@ Rake::RDocTask.new("doc") do |rdoc|
   rdoc.rdoc_dir = 'doc'
   rdoc.rdoc_files.include('README')
   rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
+begin
+  require 'rcov/rcovtask'
+  Rcov::RcovTask.new("rcov") do |t|
+    t.test_files = Dir['test/test_all.rb']
+  end
+rescue LoadError
+  nil
 end
 
