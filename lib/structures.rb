@@ -40,14 +40,14 @@ module FeedNormalizer
     # For differences at the items level, an array of hashes shows the diffs
     # on a per-entry basis. Only entries that differ will contain a hash:
     #
-    # { :items => [
-    #     {:title=>["An article tile", "A new article title"]},
-    #     {:title=>["one title", "a different title"]} ]}
+    #  { :items => [
+    #     {:title => ["An article tile", "A new article title"]},
+    #     {:title => ["one title", "a different title"]} ]}
     #
     # If the number of items in each feed are different, then the count of each
     # is provided instead:
     #
-    # { :items => [4,5] }
+    #  { :items => [4,5] }
     #
     # This method can also be useful for human-readable feed comparison if
     # its output is dumped to YAML.
@@ -126,7 +126,7 @@ module FeedNormalizer
 
     ELEMENTS = HTML_ELEMENTS + SIMPLE_ELEMENTS + BLENDED_ELEMENTS
 
-    attr_accessor *ELEMENTS
+    attr_accessor(*ELEMENTS)
 
     def initialize
       @urls = []
@@ -150,8 +150,8 @@ module FeedNormalizer
 
     ELEMENTS = HTML_ELEMENTS + SIMPLE_ELEMENTS + BLENDED_ELEMENTS
 
-    attr_accessor *ELEMENTS
-    attr_accessor :parser
+    attr_accessor(*ELEMENTS)
+    attr_accessor(:parser)
 
     alias :entries :items
 

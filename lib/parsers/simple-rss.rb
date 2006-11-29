@@ -74,7 +74,7 @@ module FeedNormalizer
 
     def self.image(parser)
       if parser.respond_to?(:image) && parser.image
-        if parser.image.match /<url>/ # RSS image contains an <url> spec
+        if parser.image =~ /<url>/ # RSS image contains an <url> spec
           parser.image.scan(/<url>(.*)<\/url>/).to_s
         else
           parser.image # Atom contains just the url

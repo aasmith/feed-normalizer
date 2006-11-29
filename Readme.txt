@@ -38,6 +38,17 @@ The feed representation stays the same, even though a different parser was used.
     feed.class # => FeedNormalizer::Feed
     feed.parser # => SimpleRSS
 
+== Cleaning / Sanitizing
+
+    feed.title # => "My Feed > Your Feed"
+    feed.entries.first.content # => "<p x='y'>Hello</p><object></object></html>"
+    feed.clean!
+
+All elements should now be either clean HTML, or HTML escaped strings.
+
+    feed.title # => "My Feed &gt; Your Feed"
+    feed.entries.first.content # => "<p>Hello</p>"
+
 == Extending
 
 Implement a parser wrapper by extending the FeedNormalizer::Parser class and overriding
@@ -49,4 +60,4 @@ See FeedNormalizer::RubyRssParser and FeedNormalizer::SimpleRssParser for exampl
 == Authors
 * Andrew A. Smith (andy@tinnedfruit.org)
 
-This library is released under the terms of the BSD License (see the LICENSE file for details).
+This library is released under the terms of the BSD License (see the License.txt file for details).

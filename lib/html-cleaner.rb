@@ -45,18 +45,17 @@ module FeedNormalizer
 
     class << self
 
-      # Do this:
-      # - unescape HTML
-      # - parse HTML into tree
-      # - find body if present, and extract tree inside that tag, otherwise parse whole tree
-      # - for each tag
-      #  - remove tag if not on list
-      #  - else escape HTML tag contents ***
-      #  - remove all attributes not on list
-      #  - extra-scrub URI attrs - delete any attrs that begin with \s*javascript\s*:
-      # - done...
+      # Does this:
+      # - Unescape HTML
+      # - Parse HTML into tree
+      # - Find 'body' if present, and extract tree inside that tag, otherwise parse whole tree
+      # - Each tag:
+      #   - remove tag if not whitelisted
+      #   - escape HTML tag contents
+      #   - remove all attributes not on whitelist
+      #   - extra-scrub URI attrs; see dodgy_uri?
       #
-      # Extra (i.e. unmatched) ending tags are removed.
+      # Extra (i.e. unmatched) ending tags and comments are removed.
       def clean(str)
         str = unescapeHTML(str)
 
@@ -87,12 +86,10 @@ module FeedNormalizer
       end
 
       # For all other feed elements:
-      # - unescape HTML
-      # - if there are no tags (<,>), escape HTML and return
-      # - else parse HTML into tree (taking body as root, if present, as before)
-      # - for each whitelisted tag
-      #  - take contents, HTML escaped, build up string.
-      # - return built up string.
+      # - Unescape HTML.
+      # - Parse HTML into tree (taking 'body' as root, if present)
+      # - Takes text out of each tag, and escapes HTML.
+      # - Returns all text concatenated.
       def flatten(str)
         str.gsub!("\n", " ")
         str = unescapeHTML(str)

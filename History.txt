@@ -1,0 +1,14 @@
+
+1.2.0
+
+ * Added HtmlCleaner - sanitizes HTML and removes 'bad' URIs to a level suitable
+   for 'safe' display inside a web browser. Can be used as a standalone library,
+   or as part of the Feed object. See Feed.clean! for details about cleaning a
+   Feed instance. Also see HtmlCleaner and its unit tests. Uses Hpricot.
+ * Added Feed-diffing. Differences between two feeds can be displayed using
+   Feed.diff. Works nicely with YAML for a readable diff.
+ * FeedNormalizer.parse now takes a hash for its arguments.
+ * Removed FN::Content.
+ * Now uses Hoe!
+
+
