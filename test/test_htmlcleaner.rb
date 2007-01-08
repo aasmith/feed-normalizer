@@ -13,6 +13,7 @@ class HtmlCleanerTest < Test::Unit::TestCase
   end
 
   def test_add_entities
+    assert_equal "", HtmlCleaner.add_entities(nil)
     assert_equal "x &gt; y", HtmlCleaner.add_entities("x > y")
     assert_equal "1 &amp; 2", HtmlCleaner.add_entities("1 & 2")
     assert_equal "&amp; &#123; &acute; &#x123;", HtmlCleaner.add_entities("& &#123; &acute; &#x123;")

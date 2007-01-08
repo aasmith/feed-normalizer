@@ -144,7 +144,7 @@ module FeedNormalizer
       #
       # This method could be improved by adding a whitelist of html entities.
       def add_entities(str)
-        str.gsub(/\"/n, '&quot;').gsub(/>/n, '&gt;').gsub(/</n, '&lt;').gsub(/&(?!(\#\d+|\#x([0-9a-f]+)|\w{2,8});)/nmi, '&amp;')
+        str.to_s.gsub(/\"/n, '&quot;').gsub(/>/n, '&gt;').gsub(/</n, '&lt;').gsub(/&(?!(\#\d+|\#x([0-9a-f]+)|\w{2,8});)/nmi, '&amp;')
       end
 
       private
