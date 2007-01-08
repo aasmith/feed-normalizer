@@ -140,6 +140,7 @@ class HtmlCleanerTest < Test::Unit::TestCase
     assert HtmlCleaner.dodgy_uri?("jav\tascript:foo()")
 
     # The Good
+    assert_nil HtmlCleaner.dodgy_uri?(nil)
     assert_nil HtmlCleaner.dodgy_uri?("http://example.org")
     assert_nil HtmlCleaner.dodgy_uri?("http://example.org/foo.html")
     assert_nil HtmlCleaner.dodgy_uri?("http://example.org/foo.cgi?x=y&a=b")

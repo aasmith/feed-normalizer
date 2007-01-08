@@ -29,7 +29,7 @@ module FeedNormalizer
     def ==(other)
       other.equal?(self) ||
         (other.instance_of?(self.class) &&
-          self.class::ELEMENTS.collect{|el| self.instance_variable_get("@#{el}")==other.instance_variable_get("@#{el}")}.all?)
+          self.class::ELEMENTS.all?{ |el| self.send(el) == other.send(el)} )
     end
 
     # Returns the difference between two Feed instances as a hash.

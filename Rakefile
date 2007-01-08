@@ -10,7 +10,7 @@ Hoe.new("feed-normalizer", "1.2.0") do |s|
   s.extra_deps << ["simple-rss", ">= 1.1"]
   s.extra_deps << ["hpricot", ">= 0.4"]
   s.need_zip = true
-  s.need_tar = true
+  s.need_tar = false
 end
 
 

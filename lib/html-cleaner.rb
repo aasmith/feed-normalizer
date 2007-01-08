@@ -109,6 +109,7 @@ module FeedNormalizer
       # This method rejects javascript, vbscript, livescript, mocha and data URLs.
       # It *could* be refined to only deny dangerous data URLs, however.
       def dodgy_uri?(uri)
+        uri = uri.to_s
 
         # special case for poorly-formed entities (missing ';')
         # if these occur *anywhere* within the string, then throw it out.
