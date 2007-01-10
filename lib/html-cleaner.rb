@@ -59,11 +59,13 @@ module FeedNormalizer
       def clean(str)
         str = unescapeHTML(str)
 
-        doc = Hpricot(str, :xhtml_strict => true)
+        doc = Hpricot(str, :fixup_tags => true)
         doc = subtree(doc, :body)
 
         # get all the tags in the document
-        tags = (doc/"*").collect {|e| e.name}
+        # Somewhere near hpricot 0.4.92 "*" starting to return all elements,
+        # including text nodes instead of just tagged elements
+        tags = (doc/"*").inject([]) { |m,e| m << e.name if(e.respond_to?(:name) && e.name =~ /^\w+$/) ; m }.uniq
 
         # Remove tags that aren't whitelisted.
         remove_tags!(doc, tags - HTML_ELEMENTS)
