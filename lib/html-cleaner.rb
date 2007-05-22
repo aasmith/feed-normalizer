@@ -64,7 +64,7 @@ module FeedNormalizer
 
         # get all the tags in the document
         # Somewhere near hpricot 0.4.92 "*" starting to return all elements,
-        # including text nodes instead of just tagged elements
+        # including text nodes instead of just tagged elements.
         tags = (doc/"*").inject([]) { |m,e| m << e.name if(e.respond_to?(:name) && e.name =~ /^\w+$/) ; m }.uniq
 
         # Remove tags that aren't whitelisted.

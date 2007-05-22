@@ -1,3 +1,6 @@
+1.3.0
+
+ * Small changes to work with hpricot 0.5. 
 
 1.2.0
 
