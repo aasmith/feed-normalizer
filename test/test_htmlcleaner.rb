@@ -87,6 +87,8 @@ class HtmlCleanerTest < Test::Unit::TestCase
     assert_equal "", HtmlCleaner.clean("<!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]-->")
     assert_equal "<p></p>", HtmlCleaner.clean("<p><!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]--></p>")
     assert_equal "<p>hi</p><p></p>", HtmlCleaner.clean("<p>hi</p><p><!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]--></p>")
+    
+    assert_equal "<p>hello</p>", HtmlCleaner.clean("<p>h<!-- hoho -->ell<!-- hoho -->o</p>")
   end
 
   def test_html_flatten
