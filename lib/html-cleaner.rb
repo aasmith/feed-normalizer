@@ -73,14 +73,14 @@ module FeedNormalizer
 
         # Remove attributes that aren't on the whitelist, or are suspicious URLs.
         (doc/remaining_tags.join(",")).each do |element|
-          element.attributes.reject! do |attr,val|
+          element.raw_attributes.reject! do |attr,val|
             !HTML_ATTRS.include?(attr) || (HTML_URI_ATTRS.include?(attr) && dodgy_uri?(val))
           end
 
-          element.attributes = element.attributes.build_hash {|a,v| [a, add_entities(v)]}
+          element.raw_attributes = element.raw_attributes.build_hash {|a,v| [a, add_entities(v)]}
         end unless remaining_tags.empty?
 
-        doc.traverse_text {|t| t.set(add_entities(t.to_s))}
+        doc.traverse_text {|t| t.set(add_entities(t.to_html))}
 
         # Return the tree, without comments. Ugly way of removing comments,
         # but can't see a way to do this in Hpricot yet.
@@ -100,7 +100,7 @@ module FeedNormalizer
         doc = subtree(doc, :body)
 
         out = ""
-        doc.traverse_text {|t| out << add_entities(t.to_s)}
+        doc.traverse_text {|t| out << add_entities(t.to_html)}
 
         return out
       end

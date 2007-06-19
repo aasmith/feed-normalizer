@@ -47,7 +47,7 @@ class HtmlCleanerTest < Test::Unit::TestCase
     assert_equal "<p>two</p>", HtmlCleaner.clean("<p>para</p><body><p>two</p>")
     assert_equal "<p>para</p>&lt;bo /dy&gt;<p>two</p>", HtmlCleaner.clean("<p>para</p><bo /dy><p>two</p></body>")
     assert_equal "<p>para</p>&lt;bo\\/dy&gt;<p>two</p>", HtmlCleaner.clean("<p>para</p><bo\\/dy><p>two</p></body>")
-    assert_equal "<p>para</p><p>two</p>", HtmlCleaner.clean("<p>para</p><body/><p>two</p></body>")
+    assert_equal "<p>two</p>", HtmlCleaner.clean("<p>para</p><body/><p>two</p></body>")
 
     assert_equal "<p>one &amp; two</p>", HtmlCleaner.clean(HtmlCleaner.clean("<p>one & two</p>"))
 
@@ -87,7 +87,7 @@ class HtmlCleanerTest < Test::Unit::TestCase
     assert_equal "", HtmlCleaner.clean("<!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]-->")
     assert_equal "<p></p>", HtmlCleaner.clean("<p><!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]--></p>")
     assert_equal "<p>hi</p><p></p>", HtmlCleaner.clean("<p>hi</p><p><!--[if gte IE 4]><SCRIPT>alert('XSS');</SCRIPT><![endif]--></p>")
-    
+
     assert_equal "<p>hello</p>", HtmlCleaner.clean("<p>h<!-- hoho -->ell<!-- hoho -->o</p>")
   end
 
