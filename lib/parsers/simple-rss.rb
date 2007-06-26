@@ -34,7 +34,7 @@ module FeedNormalizer
       feed_mapping = {
         :generator => :generator,
         :title => :title,
-        :last_updated => [:updated, :lastBuildDate, :pubDate],
+        :last_updated => [:updated, :lastBuildDate, :pubDate, :dc_date],
         :copyright => [:copyright, :rights],
         :authors => [:author, :webMaster, :managingEditor, :contributor],
         :urls => :link,
@@ -50,7 +50,7 @@ module FeedNormalizer
 
       # entry elements
       entry_mapping = {
-        :date_published => [:pubDate, :published],
+        :date_published => [:pubDate, :published, :dc_date],
         :urls => :link,
         :description => [:description, :summary],
         :content => [:content, :description],
@@ -85,7 +85,7 @@ module FeedNormalizer
     end
 
     def self.feed_id(parser)
-      overridden_value(parser, :id) || "#{parser.link}"
+      overridden_value(parser, :id) || ("#{parser.link}" if parser.respond_to?(:link))
     end
 
     # gets the value returned from the method if it overriden, otherwise nil.

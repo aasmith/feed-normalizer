@@ -160,7 +160,7 @@ module FeedNormalizer
       @urls = []
       @authors = []
       @items = []
-      @parser = wrapper.parser
+      @parser = wrapper.parser.to_s
     end
 
     def channel() self end

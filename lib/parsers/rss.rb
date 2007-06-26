@@ -36,7 +36,7 @@ module FeedNormalizer
         :description => :description,
         :copyright => :copyright,
         :authors => :managingEditor,
-        :last_updated => [:lastBuildDate, :pubDate],
+        :last_updated => [:lastBuildDate, :pubDate, :dc_date],
         :id => :guid
       }
 
@@ -49,7 +49,7 @@ module FeedNormalizer
 
       # item elements
       item_mapping = {
-        :date_published => :pubDate,
+        :date_published => [:pubDate, :dc_date],
         :urls => :link,
         :description => :description,
         :content => :description,

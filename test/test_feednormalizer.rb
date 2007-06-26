@@ -1,5 +1,6 @@
 require 'test/unit'
 require 'feed-normalizer'
+require 'yaml'
 
 include FeedNormalizer
 
@@ -44,7 +45,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
   end
 
   def test_parser_failover_order
-    assert_equal SimpleRSS, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10], :force_parser => RubyRssParser).parser
+    assert_equal 'SimpleRSS', FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10], :force_parser => RubyRssParser).parser
   end
 
   def test_force_parser_fail
@@ -56,8 +57,8 @@ class FeedNormalizerTest < Test::Unit::TestCase
   end
 
   def test_correct_parser_used
-    assert_equal RSS::Parser, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20]).parser
-    assert_equal SimpleRSS, FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10]).parser
+    assert_equal 'RSS::Parser', FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20]).parser
+    assert_equal 'SimpleRSS', FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10]).parser
   end
 
   def test_rss
@@ -68,6 +69,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_equal "MP3 player court order overturned", feed.entries.last.title
     assert_equal "SanDisk puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.description
     assert_equal "SanDisk puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.content
+    assert_instance_of Time, feed.entries.last.date_published
   end
 
   def test_simplerss
@@ -86,8 +88,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
     XML_FILES.keys.each do |xml_file|
       feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[xml_file])
 
-      assert [feed.title, feed.url, feed.entries.first.url].collect{|e| e.is_a?(String)}.all?, "Not everything was a String in #{xml_file}"
-      assert [feed.parser, feed.class].collect{|e| e.is_a?(Class)}.all?
+      assert [feed.parser, feed.title, feed.url, feed.entries.first.url].collect{|e| e.is_a?(String)}.all?, "Not everything was a String in #{xml_file}"
     end
   end
 
@@ -121,6 +122,11 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_nothing_raised { Marshal.load(Marshal.dump(feed)) }
   end
 
+  def test_yaml
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20])
+    assert_nothing_raised { YAML.load(YAML.dump(feed)) }
+  end
+
   def test_method_missing
     assert_raise(NoMethodError) { Feed.new(nil).nonexistant }
   end
@@ -131,6 +137,22 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert feed.entries.first.content !~ /\<p\>/
     feed.clean!
     assert feed.entries.first.content =~ /\<p\>/
+  end
+
+  def test_malformed_feed
+    assert_nothing_raised { FeedNormalizer::FeedNormalizer.parse('<feed></feed>') }
+  end
+
+  def test_dublin_core_date_ruby_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => RubyRssParser)
+    assert_equal 'RSS::Parser', feed.parser
+    assert_instance_of Time, feed.entries.first.date_published
+  end
+
+  def test_dublin_core_date_simple_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => SimpleRssParser)
+    assert_equal 'SimpleRSS', feed.parser
+    assert_instance_of Time, feed.entries.first.date_published
   end
 
 end
