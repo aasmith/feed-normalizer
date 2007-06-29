@@ -54,7 +54,7 @@ module FeedNormalizer
         :description => :description,
         :content => :description,
         :title => :title,
-        :authors => :author
+        :authors => [:author, :dc_creator]
       }
 
       rss.items.each do |rss_item|

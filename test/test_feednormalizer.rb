@@ -155,5 +155,17 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_instance_of Time, feed.entries.first.date_published
   end
 
+  def test_dublin_core_creator_ruby_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => RubyRssParser)
+    assert_equal 'RSS::Parser', feed.parser
+    assert_equal 'Jeff Hecht', feed.entries.last.author
+  end
+
+  def test_dublin_core_creator_simple_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => SimpleRssParser)
+    assert_equal 'SimpleRSS', feed.parser
+    assert_equal 'Jeff Hecht', feed.entries.last.author
+  end
+
 end
 

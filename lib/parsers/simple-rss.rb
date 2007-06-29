@@ -55,7 +55,7 @@ module FeedNormalizer
         :description => [:description, :summary],
         :content => [:content, :description],
         :title => :title,
-        :authors => [:author, :contributor]
+        :authors => [:author, :contributor, :dc_creator]
       }
 
       atomrss.entries.each do |atomrss_entry|
