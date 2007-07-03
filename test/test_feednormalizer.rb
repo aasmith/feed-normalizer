@@ -144,27 +144,57 @@ class FeedNormalizerTest < Test::Unit::TestCase
   end
 
   def test_dublin_core_date_ruby_rss
-    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => RubyRssParser)
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => RubyRssParser, :try_others => false)
     assert_equal 'RSS::Parser', feed.parser
     assert_instance_of Time, feed.entries.first.date_published
   end
 
   def test_dublin_core_date_simple_rss
-    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => SimpleRssParser)
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => SimpleRssParser, :try_others => false)
     assert_equal 'SimpleRSS', feed.parser
     assert_instance_of Time, feed.entries.first.date_published
   end
 
   def test_dublin_core_creator_ruby_rss
-    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => RubyRssParser)
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => RubyRssParser, :try_others => false)
     assert_equal 'RSS::Parser', feed.parser
     assert_equal 'Jeff Hecht', feed.entries.last.author
   end
 
   def test_dublin_core_creator_simple_rss
-    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => SimpleRssParser)
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => SimpleRssParser, :try_others => false)
     assert_equal 'SimpleRSS', feed.parser
     assert_equal 'Jeff Hecht', feed.entries.last.author
+  end
+
+  def test_entry_with_multiple_categories_ruby_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
+    assert_equal ['Technology'], feed.items[1].categories
+  end
+
+  def test_entry_with_single_category_ruby_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
+    assert_equal ['Click'], feed.items.first.categories
+  end
+
+  def test_entry_with_no_category_ruby_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
+    assert_equal [], feed.items.last.categories
+  end
+
+  def test_entry_with_multiple_categories_simple_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false)
+    assert_equal ['Technology'], feed.items[1].categories
+  end
+
+  def test_entry_with_single_category_simple_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false)
+    assert_equal ['Click'], feed.items.first.categories
+  end
+
+  def test_entry_with_no_category_simple_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false)
+    assert_equal [], feed.items.last.categories
   end
 
 end

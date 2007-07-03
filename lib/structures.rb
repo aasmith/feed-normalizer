@@ -121,7 +121,7 @@ module FeedNormalizer
     include Singular, ElementEquality, ElementCleaner
 
     HTML_ELEMENTS = [:content, :description, :title]
-    SIMPLE_ELEMENTS = [:date_published, :urls, :id, :authors, :copyright]
+    SIMPLE_ELEMENTS = [:date_published, :urls, :id, :authors, :copyright, :categories]
     BLENDED_ELEMENTS = []
 
     ELEMENTS = HTML_ELEMENTS + SIMPLE_ELEMENTS + BLENDED_ELEMENTS
@@ -131,6 +131,7 @@ module FeedNormalizer
     def initialize
       @urls = []
       @authors = []
+      @categories = []
     end
 
   end
