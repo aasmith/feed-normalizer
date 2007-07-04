@@ -85,22 +85,32 @@ module FeedNormalizer
   class FeedNormalizer
 
     # Parses the given xml and attempts to return a normalized Feed object.
-    # Setting forced parser to a suitable parser will mean that parser is
-    # used first, and if try_others is false, it is the only parser used,
-    # otherwise all parsers in the ParserRegistry are attempted next, in
+    # Setting +force_parser+ to a suitable parser will mean that parser is
+    # used first, and if +try_others+ is false, it is the only parser used,
+    # otherwise all parsers in the ParserRegistry are attempted, in
     # order of priority.
     #
-    # Available options:
-    # * :loose - true or false, defaults to false.
+    # ===Available options
+    #
+    # * <tt>:force_parser</tt> - instruct feed-normalizer to try the specified
+    #   parser first. Takes a class, such as RubyRssParser, or SimpleRssParser.
+    #
+    # * <tt>:try_others</tt> - +true+ or +false+, defaults to +true+.
+    #   If +true+, other parsers will be used as described above. The option
+    #   is useful if combined with +force_parser+ to only use a single parser.
+    #
+    # * <tt>:loose</tt> - +true+ or +false+, defaults to +false+.
+    #
     #   Specifies parsing should be done loosely. This means that when
     #   feed-normalizer would usually throw away data in order to meet
-    #   the concept of keeping resulting feed outputs the same regardless
-    #   of the underlying parser, it will instead be kept. This currently
+    #   the requirement of keeping resulting feed outputs the same regardless
+    #   of the underlying parser, the data will instead be kept. This currently
     #   affects the following items:
-    #   * Categories: RSS allows for multiple categories per feed item.
-    #     Limitation: SimpleRSS can only return the first category for an item.
-    #     Result: When loose is true, the extra categories are kept, of
-    #     course, only if the parser is not SimpleRSS.
+    #   * <em>Categories:</em> RSS allows for multiple categories per feed item.
+    #     * <em>Limitation:</em> SimpleRSS can only return the first category
+    #       for an item.
+    #     * <em>Result:</em> When loose is true, the extra categories are kept,
+    #       of course, only if the parser is not SimpleRSS.
     def self.parse(xml, opts = {})
 
       # Get a string ASAP, as multiple read()'s will start returning nil..

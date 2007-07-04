@@ -165,7 +165,7 @@ module FeedNormalizer
 end
 
 
-module Enumerable
+module Enumerable #:nodoc:
   def build_hash
     result = {}
     self.each do |elt|
@@ -180,7 +180,7 @@ end
 #  Subject: A simple Hpricot text setter
 #  From: Chris Gehlker <canyonrat mac.com>
 #  Date: Fri, 11 Aug 2006 03:19:13 +0900
-class Hpricot::Text
+class Hpricot::Text #:nodoc:
   def set(string)
     @content = string
     self.raw_string = string
