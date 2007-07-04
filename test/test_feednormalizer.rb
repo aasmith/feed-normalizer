@@ -197,5 +197,15 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_equal [], feed.items.last.categories
   end
 
+  def test_loose_categories_ruby_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false, :loose => true)
+    assert_equal [1,2,0], feed.entries.collect{|e|e.categories.size}
+  end
+
+  def test_loose_categories_simple_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false, :loose => true)
+    assert_equal [1,1,0], feed.entries.collect{|e|e.categories.size}
+  end
+
 end
 

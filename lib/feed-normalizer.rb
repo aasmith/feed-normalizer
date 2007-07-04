@@ -13,7 +13,7 @@ module FeedNormalizer
 
     # Parses the given feed, and returns a normalized representation.
     # Returns nil if the feed could not be parsed.
-    def self.parse(feed)
+    def self.parse(feed, loose)
       nil
     end
 
@@ -89,20 +89,32 @@ module FeedNormalizer
     # used first, and if try_others is false, it is the only parser used,
     # otherwise all parsers in the ParserRegistry are attempted next, in
     # order of priority.
+    #
+    # Available options:
+    # * :loose - true or false, defaults to false.
+    #   Specifies parsing should be done loosely. This means that when
+    #   feed-normalizer would usually throw away data in order to meet
+    #   the concept of keeping resulting feed outputs the same regardless
+    #   of the underlying parser, it will instead be kept. This currently
+    #   affects the following items:
+    #   * Categories: RSS allows for multiple categories per feed item.
+    #     Limitation: SimpleRSS can only return the first category for an item.
+    #     Result: When loose is true, the extra categories are kept, of
+    #     course, only if the parser is not SimpleRSS.
     def self.parse(xml, opts = {})
 
       # Get a string ASAP, as multiple read()'s will start returning nil..
       xml = xml.respond_to?(:read) ? xml.read : xml.to_s
 
       if opts[:force_parser]
-        result = opts[:force_parser].parse(xml)
+        result = opts[:force_parser].parse(xml, opts[:loose])
 
         return result if result
         return nil if opts[:try_others] == false
       end
 
       ParserRegistry.parsers.each do |parser|
-        result = parser.parse(xml)
+        result = parser.parse(xml, opts[:loose])
         return result if result
       end
 

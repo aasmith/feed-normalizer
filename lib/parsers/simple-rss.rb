@@ -9,7 +9,7 @@ module FeedNormalizer
       SimpleRSS
     end
 
-    def self.parse(xml)
+    def self.parse(xml, loose)
       begin
         atomrss = parser.parse(xml)
       rescue Exception => e

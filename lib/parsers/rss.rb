@@ -7,7 +7,7 @@ module FeedNormalizer
       RSS::Parser
     end
 
-    def self.parse(xml)
+    def self.parse(xml, loose)
       begin
         rss = parser.parse(xml)
       rescue Exception => e
@@ -15,7 +15,7 @@ module FeedNormalizer
         return nil
       end
 
-      rss ? package(rss) : nil
+      rss ? package(rss, loose) : nil
     end
 
     # Fairly high priority; a fast and strict parser.
@@ -25,7 +25,7 @@ module FeedNormalizer
 
     protected
 
-    def self.package(rss)
+    def self.package(rss, loose)
       feed = Feed.new(self)
 
       # channel elements
@@ -64,7 +64,9 @@ module FeedNormalizer
         # custom item elements
         feed_entry.id = rss_item.guid.content if rss_item.respond_to?(:guid) && rss_item.guid
         feed_entry.copyright = rss.copyright if rss_item.respond_to? :copyright
-        feed_entry.categories = [rss_item.categories.first.content] rescue []
+        feed_entry.categories = loose ?
+                                  rss_item.categories.collect{|c|c.content} :
+                                  [rss_item.categories.first.content] rescue []
 
         feed.entries << feed_entry
       end
