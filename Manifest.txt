@@ -2,7 +2,7 @@ History.txt
 License.txt
 Manifest.txt
 Rakefile
-Readme.txt
+README.txt
 lib/feed-normalizer.rb
 lib/html-cleaner.rb
 lib/parsers/rss.rb
