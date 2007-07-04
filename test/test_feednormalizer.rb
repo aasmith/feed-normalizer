@@ -167,34 +167,14 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_equal 'Jeff Hecht', feed.entries.last.author
   end
 
-  def test_entry_with_multiple_categories_ruby_rss
+  def test_entry_categories_ruby_rss
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
-    assert_equal ['Technology'], feed.items[1].categories
+    assert_equal [['Click'],['Technology'],[]], feed.items.collect {|i|i.categories}
   end
 
-  def test_entry_with_single_category_ruby_rss
-    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
-    assert_equal ['Click'], feed.items.first.categories
-  end
-
-  def test_entry_with_no_category_ruby_rss
-    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
-    assert_equal [], feed.items.last.categories
-  end
-
-  def test_entry_with_multiple_categories_simple_rss
+  def test_entry_categories_simple_rss
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false)
-    assert_equal ['Technology'], feed.items[1].categories
-  end
-
-  def test_entry_with_single_category_simple_rss
-    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false)
-    assert_equal ['Click'], feed.items.first.categories
-  end
-
-  def test_entry_with_no_category_simple_rss
-    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false)
-    assert_equal [], feed.items.last.categories
+    assert_equal [['Click'],['Technology'],[]], feed.items.collect {|i|i.categories}
   end
 
   def test_loose_categories_ruby_rss
