@@ -1,5 +1,10 @@
 require 'rss'
 
+# For some reason, this is only included in the RDF Item by default.
+class RSS::Rss::Channel::Item # :nodoc:
+  include RSS::ContentModel
+end
+
 module FeedNormalizer
   class RubyRssParser < Parser
 

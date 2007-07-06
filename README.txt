@@ -23,7 +23,7 @@ object graph, regardless of the underlying feed format.
     feed.entries.first.url # => "http://www.iht.com/articles/2006/10/03/frontpage/web.1003UN.php"
 
     feed.class # => FeedNormalizer::Feed
-    feed.parser # => RSS::Parser
+    feed.parser # => "RSS::Parser"
 
 Now read an Atom feed, and the same class is returned, and the same terminology applies:
 
@@ -36,7 +36,7 @@ Now read an Atom feed, and the same class is returned, and the same terminology 
 The feed representation stays the same, even though a different parser was used.
 
     feed.class # => FeedNormalizer::Feed
-    feed.parser # => SimpleRSS
+    feed.parser # => "SimpleRSS"
 
 == Cleaning / Sanitizing
 

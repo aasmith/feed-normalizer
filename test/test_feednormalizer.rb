@@ -68,7 +68,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_equal ["http://news.bbc.co.uk/go/rss/-/1/hi/technology/default.stm"], feed.urls
     assert_equal "MP3 player court order overturned", feed.entries.last.title
     assert_equal "SanDisk puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.description
-    assert_equal "SanDisk puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.content
+    assert_match /test\d/, feed.entries.last.content
     assert_instance_of Time, feed.entries.last.date_published
   end
 
@@ -108,7 +108,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
     no_diff = feed.diff(feed)
 
     assert diff.keys.all? {|key| [:title, :items].include?(key)}
-    assert_equal 2, diff[:items].size
+    assert_equal 3, diff[:items].size
 
     assert diff_short.keys.all? {|key| [:title, :items].include?(key)}
     assert_equal [3,2], diff_short[:items]
@@ -185,6 +185,22 @@ class FeedNormalizerTest < Test::Unit::TestCase
   def test_loose_categories_simple_rss
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false, :loose => true)
     assert_equal [1,1,0], feed.entries.collect{|e|e.categories.size}
+  end
+
+  def test_content_encoded_simple_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false)
+
+    feed.entries.each_with_index do |e, i|
+      assert_match(/test#{i+1}/, e.content)
+    end
+  end
+
+  def test_content_encoded_ruby_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
+
+    feed.entries.each_with_index do |e, i|
+      assert_match(/test#{i+1}/, e.content)
+    end
   end
 
 end
