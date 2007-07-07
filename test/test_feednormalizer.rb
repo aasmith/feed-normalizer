@@ -68,7 +68,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_equal ["http://news.bbc.co.uk/go/rss/-/1/hi/technology/default.stm"], feed.urls
     assert_equal "MP3 player court order overturned", feed.entries.last.title
     assert_equal "SanDisk puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.description
-    assert_match /test\d/, feed.entries.last.content
+    assert_match(/test\d/, feed.entries.last.content)
     assert_instance_of Time, feed.entries.last.date_published
   end
 

@@ -41,7 +41,7 @@ module FeedNormalizer
             src[src_function]
           end
 
-          if value
+          if value.to_s != ""
             append_or_set!(value, dest, dest_function)
             break
           end
