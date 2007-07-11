@@ -1,3 +1,13 @@
+1.4.0
+
+ * Support content:encoded. Accessible via Entry#content.
+ * Support categories. Accessible via Entry#categories.
+ * Introduces a new parsing feature 'loose parsing'. Use :loose => true
+   when parsing if the required output should retain extra data, rather
+   than drop it in the interests of 'lowest common denomiator' normalization.
+   Currently affects how categories works. See the documentation in
+   FeedNormalizer#parse for more details.
+
 1.3.2
 
  * Add support for applicable dublin core elements. (dc:date and dc:creator)
