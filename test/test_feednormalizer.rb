@@ -203,5 +203,11 @@ class FeedNormalizerTest < Test::Unit::TestCase
     end
   end
 
+  def test_atom_content_contains_pluses
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10], :force_parser => SimpleRssParser, :try_others => false)
+
+    assert_equal 2, feed.entries.last.content.scan(/\+/).size
+  end
+
 end
 

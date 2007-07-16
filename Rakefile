@@ -5,7 +5,7 @@ Hoe.new("feed-normalizer", "1.4.0") do |s|
   s.email = "andy@tinnedfruit.org"
   s.url = "http://feed-normalizer.rubyforge.org/"
   s.summary = "Extensible Ruby wrapper for Atom and RSS parsers"
-  s.description = s.paragraphs_of('Readme.txt', 1..2).join("\n\n")
+  s.description = s.paragraphs_of('README.txt', 1..2).join("\n\n")
   s.changes = s.paragraphs_of('History.txt', 0..1).join("\n\n")
   s.extra_deps << ["simple-rss", ">= 1.1"]
   s.extra_deps << ["hpricot", ">= 0.6"]

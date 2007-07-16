@@ -1,5 +1,10 @@
 require 'simple-rss'
 
+class SimpleRSS
+  undef unescape
+  def unescape(s); s; end
+end
+
 module FeedNormalizer
 
   # The SimpleRSS parser can handle both RSS and Atom feeds.
