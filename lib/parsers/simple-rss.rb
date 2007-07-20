@@ -2,7 +2,7 @@ require 'simple-rss'
 
 class SimpleRSS
   undef unescape
-  def unescape(s); s; end
+  def unescape(s); s.gsub(/(<!\[CDATA\[|\]\]>)/,'').strip; end
 end
 
 module FeedNormalizer
