@@ -117,6 +117,16 @@ module FeedNormalizer
 
 
   # Represents a feed item entry.
+  # Available fields are:
+  #  * content
+  #  * description
+  #  * title
+  #  * date_published
+  #  * urls / url
+  #  * id
+  #  * authors / author
+  #  * copyright
+  #  * categories
   class Entry
     include Singular, ElementEquality, ElementCleaner
 
@@ -137,6 +147,17 @@ module FeedNormalizer
   end
 
   # Represents the root element of a feed.
+  # Available fields are:
+  #  * title
+  #  * description
+  #  * id
+  #  * last_updated
+  #  * copyright
+  #  * authors / author
+  #  * urls / url
+  #  * image
+  #  * generator
+  #  * items / channel 
   class Feed
     include Singular, ElementEquality, ElementCleaner
 
