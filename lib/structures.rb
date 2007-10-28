@@ -115,6 +115,23 @@ module FeedNormalizer
     end
   end
 
+  module TimeFix
+    # Reparse any Time instances, due to RSS::Parser's redefinition of
+    # certain aspects of the Time class that creates unexpected behaviour
+    # when extending the Time class, as some common third party libraries do.
+    # See http://code.google.com/p/feed-normalizer/issues/detail?id=13.
+    def reparse(obj)
+      @parsed ||= false
+
+      return obj if @parsed
+
+      if obj.is_a?(Time)
+        @parsed = true
+        Time.at(obj) rescue obj
+      end
+    end
+  end
+
 
   # Represents a feed item entry.
   # Available fields are:
@@ -128,7 +145,7 @@ module FeedNormalizer
   #  * copyright
   #  * categories
   class Entry
-    include Singular, ElementEquality, ElementCleaner
+    include Singular, ElementEquality, ElementCleaner, TimeFix
 
     HTML_ELEMENTS = [:content, :description, :title]
     SIMPLE_ELEMENTS = [:date_published, :urls, :id, :authors, :copyright, :categories]
@@ -142,6 +159,12 @@ module FeedNormalizer
       @urls = []
       @authors = []
       @categories = []
+      @date_published = nil
+    end
+
+    undef date_published
+    def date_published
+      @date_published = reparse(@date_published)
     end
 
   end
@@ -157,9 +180,9 @@ module FeedNormalizer
   #  * urls / url
   #  * image
   #  * generator
-  #  * items / channel 
+  #  * items / channel
   class Feed
-    include Singular, ElementEquality, ElementCleaner
+    include Singular, ElementEquality, ElementCleaner, TimeFix
 
     # Elements that can contain HTML fragments.
     HTML_ELEMENTS = [:title, :description]
@@ -183,6 +206,12 @@ module FeedNormalizer
       @authors = []
       @items = []
       @parser = wrapper.parser.to_s
+      @last_updated = nil
+    end
+
+    undef last_updated
+    def last_updated
+      @last_updated = reparse(@last_updated)
     end
 
     def channel() self end

@@ -1,4 +1,6 @@
 require 'test/unit'
+$:.unshift(File.dirname(__FILE__))
+$:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'feed-normalizer'
 require 'yaml'
 
@@ -207,6 +209,16 @@ class FeedNormalizerTest < Test::Unit::TestCase
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10], :force_parser => SimpleRssParser, :try_others => false)
 
     assert_equal 2, feed.entries.last.content.scan(/\+/).size
+  end
+
+  # http://code.google.com/p/feed-normalizer/issues/detail?id=13
+  def test_times_are_reparsed
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
+
+    Time.class_eval "alias :old_to_s :to_s; def to_s(x=1); old_to_s; end"
+
+    assert_equal "Sat Sep 09 07:57:06 -0700 2006", feed.last_updated.to_s(:foo)
+    assert_equal "Sat Sep 09 05:45:35 -0700 2006", feed.entries.first.date_published.to_s(:foo)
   end
 
 end
