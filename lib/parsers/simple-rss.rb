@@ -1,6 +1,26 @@
 require 'simple-rss'
 
+# Monkey patches for outstanding issues logged in the simple-rss project.
+#   * Add support for issued time field:
+#     http://rubyforge.org/tracker/index.php?func=detail&aid=13980&group_id=893&atid=3517
+#   * The '+' symbol is lost when escaping fields.
+#     http://rubyforge.org/tracker/index.php?func=detail&aid=10852&group_id=893&atid=3517
+#
 class SimpleRSS
+  @@item_tags << :issued
+
+  def clean_content(tag, attrs, content)
+    content = content.to_s
+    case tag
+      when :pubDate, :lastBuildDate, :published, :updated, :expirationDate, :modified, :'dc:date', :issued
+        Time.parse(content) rescue unescape(content)
+      when :author, :contributor, :skipHours, :skipDays
+        unescape(content.gsub(/<.*?>/,''))
+      else
+        content.empty? && "#{attrs} " =~ /href=['"]?([^'"]*)['" ]/mi ? $1.strip : unescape(content)
+    end
+  end
+
   undef unescape
   def unescape(s); s.gsub(/(<!\[CDATA\[|\]\]>)/,'').strip; end
 end
@@ -55,7 +75,7 @@ module FeedNormalizer
 
       # entry elements
       entry_mapping = {
-        :date_published => [:pubDate, :published, :dc_date],
+        :date_published => [:pubDate, :published, :dc_date, :issued],
         :urls => :link,
         :description => [:description, :summary],
         :content => [:content, :content_encoded, :description],

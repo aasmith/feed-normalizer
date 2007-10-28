@@ -221,5 +221,11 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_equal "Sat Sep 09 05:45:35 -0700 2006", feed.entries.first.date_published.to_s(:foo)
   end
 
+  def test_atom03_has_issued
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom03], :force_parser => SimpleRssParser, :try_others => false)
+
+    assert_equal "Tue Aug 29 02:31:03 UTC 2006", feed.entries.first.date_published.to_s
+  end
+
 end
 
