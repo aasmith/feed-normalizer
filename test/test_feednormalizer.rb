@@ -69,7 +69,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_equal "BBC News | Technology | UK Edition", feed.title
     assert_equal ["http://news.bbc.co.uk/go/rss/-/1/hi/technology/default.stm"], feed.urls
     assert_equal "MP3 player court order overturned", feed.entries.last.title
-    assert_equal "SanDisk puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.description
+    assert_equal "<b>SanDisk</b> puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.description
     assert_match(/test\d/, feed.entries.last.content)
     assert_instance_of Time, feed.entries.last.date_published
   end
@@ -136,9 +136,11 @@ class FeedNormalizerTest < Test::Unit::TestCase
   def test_clean
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
 
-    assert feed.entries.first.content !~ /\<p\>/
+    assert_match(/<plaintext>/, feed.entries.first.content)
+    assert_match(/<plaintext>/, feed.entries.first.description)
     feed.clean!
-    assert feed.entries.first.content =~ /\<p\>/
+    assert_no_match(/<plaintext>/, feed.entries.first.content)
+    assert_no_match(/<plaintext>/, feed.entries.first.description)
   end
 
   def test_malformed_feed
@@ -147,25 +149,21 @@ class FeedNormalizerTest < Test::Unit::TestCase
 
   def test_dublin_core_date_ruby_rss
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => RubyRssParser, :try_others => false)
-    assert_equal 'RSS::Parser', feed.parser
     assert_instance_of Time, feed.entries.first.date_published
   end
 
   def test_dublin_core_date_simple_rss
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => SimpleRssParser, :try_others => false)
-    assert_equal 'SimpleRSS', feed.parser
     assert_instance_of Time, feed.entries.first.date_published
   end
 
   def test_dublin_core_creator_ruby_rss
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => RubyRssParser, :try_others => false)
-    assert_equal 'RSS::Parser', feed.parser
     assert_equal 'Jeff Hecht', feed.entries.last.author
   end
 
   def test_dublin_core_creator_simple_rss
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rdf10], :force_parser => SimpleRssParser, :try_others => false)
-    assert_equal 'SimpleRSS', feed.parser
     assert_equal 'Jeff Hecht', feed.entries.last.author
   end
 
@@ -222,9 +220,21 @@ class FeedNormalizerTest < Test::Unit::TestCase
   end
 
   def test_atom03_has_issued
+    SimpleRSS.class_eval "@@item_tags.delete(:issued)"
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom03], :force_parser => SimpleRssParser, :try_others => false)
+    assert_nil feed.entries.first.date_published
 
+    SimpleRSS.class_eval "@@item_tags << :issued"
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom03], :force_parser => SimpleRssParser, :try_others => false)
     assert_equal "Tue Aug 29 02:31:03 UTC 2006", feed.entries.first.date_published.to_s
+  end
+
+  def test_html_should_be_escaped_by_default
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
+    assert_match "<b>SanDisk</b>", feed.items.last.description
+
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false)
+    assert_match "<b>SanDisk</b>", feed.items.last.description
   end
 
 end

@@ -100,10 +100,10 @@ module FeedNormalizer
         doc = Hpricot(str, :xhtml_strict => true)
         doc = subtree(doc, :body)
 
-        out = ""
+        out = []
         doc.traverse_text {|t| out << add_entities(t.to_html)}
 
-        return out
+        return out.join
       end
 
       # Returns true if the given string contains a suspicious URL,

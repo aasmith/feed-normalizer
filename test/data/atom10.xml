@@ -17,8 +17,8 @@
     <link href="http://habtm.com/articles/2006/08/16/a-forum-on-rails" rel="alternate" type="text/html"/>
     <category term="rails" scheme="http://habtm.com/articles/category/rails" label="rails"/>
     <category term="ruby" scheme="http://habtm.com/articles/category/ruby" label="ruby"/>
-    <summary type="html">&lt;p&gt;Josh Goebel and I took an evening to bang out a little project: &lt;a href="http://beast.caboo.se/"&gt;Beast&lt;/a&gt;.  It&amp;#8217;s our minimal no-fluff Rails forum.  It&amp;#8217;s no beast of an application either, clocking in at 285 LOC and a 1:1.5 test ratio.  &lt;a href="http://svn.techno-weenie.net/projects/beast/"&gt;Check it out&lt;/a&gt;!&lt;/p&gt;</summary>
-    <content type="html">&lt;p&gt;Josh Goebel and I took an evening to bang out a little project: &lt;a href="http://beast.caboo.se/"&gt;Beast&lt;/a&gt;.  It&amp;#8217;s our minimal no-fluff Rails forum.  It&amp;#8217;s no beast of an application either, clocking in at 285 LOC and a 1:1.5 test ratio.  &lt;a href="http://svn.techno-weenie.net/projects/beast/"&gt;Check it out&lt;/a&gt;!&lt;/p&gt;</content>
+    <summary type="html">&lt;plaintext&gt;&lt;p&gt;Josh Goebel and I took an evening to bang out a little project: &lt;a href="http://beast.caboo.se/"&gt;Beast&lt;/a&gt;.  It&amp;#8217;s our minimal no-fluff Rails forum.  It&amp;#8217;s no beast of an application either, clocking in at 285 LOC and a 1:1.5 test ratio.  &lt;a href="http://svn.techno-weenie.net/projects/beast/"&gt;Check it out&lt;/a&gt;!&lt;/p&gt;</summary>
+    <content type="html">&lt;plaintext&gt;&lt;p&gt;Josh Goebel and I took an evening to bang out a little project: &lt;a href="http://beast.caboo.se/"&gt;Beast&lt;/a&gt;.  It&amp;#8217;s our minimal no-fluff Rails forum.  It&amp;#8217;s no beast of an application either, clocking in at 285 LOC and a 1:1.5 test ratio.  &lt;a href="http://svn.techno-weenie.net/projects/beast/"&gt;Check it out&lt;/a&gt;!&lt;/p&gt;</content>
   </entry>
   <entry>
     <author>

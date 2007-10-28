@@ -9,6 +9,7 @@ require 'simple-rss'
 class SimpleRSS
   @@item_tags << :issued
 
+  undef clean_content
   def clean_content(tag, attrs, content)
     content = content.to_s
     case tag
@@ -22,7 +23,18 @@ class SimpleRSS
   end
 
   undef unescape
-  def unescape(s); s.gsub(/(<!\[CDATA\[|\]\]>)/,'').strip; end
+  def unescape(s)
+   if s =~ /^(<!\[CDATA\[|\]\]>)/
+     # Raw HTML is inside the CDATA, so just remove the CDATA wrapper.
+     s.gsub(/(<!\[CDATA\[|\]\]>)/,'').strip
+   elsif s =~ /[<>]/
+     # Already looks like HTML.
+     s
+   else
+     # Make it HTML.
+     FeedNormalizer::HtmlCleaner.unescapeHTML(s)
+   end
+ end
 end
 
 module FeedNormalizer
