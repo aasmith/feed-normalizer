@@ -132,6 +132,21 @@ module FeedNormalizer
     end
   end
 
+  module RewriteRelativeLinks
+    def rewrite_relative_links(text, url)
+      if host = url_host(url)
+        text.to_s.gsub(/(href|src)=('|")\//, '\1=\2http://' + host + '/')
+      else
+        text
+      end
+    end
+
+    private
+      def url_host(url)
+        URI.parse(url).host rescue nil
+      end
+  end
+
 
   # Represents a feed item entry.
   # Available fields are:
@@ -145,7 +160,7 @@ module FeedNormalizer
   #  * copyright
   #  * categories
   class Entry
-    include Singular, ElementEquality, ElementCleaner, TimeFix
+    include Singular, ElementEquality, ElementCleaner, TimeFix, RewriteRelativeLinks
 
     HTML_ELEMENTS = [:content, :description, :title]
     SIMPLE_ELEMENTS = [:date_published, :urls, :id, :authors, :copyright, :categories]
@@ -159,12 +174,17 @@ module FeedNormalizer
       @urls = []
       @authors = []
       @categories = []
-      @date_published = nil
+      @date_published, @content = nil
     end
 
     undef date_published
     def date_published
       @date_published = reparse(@date_published)
+    end
+
+    undef content
+    def content
+      @content = rewrite_relative_links(@content, url)
     end
 
   end
