@@ -42,7 +42,8 @@ module FeedNormalizer
         :copyright => :copyright,
         :authors => :managingEditor,
         :last_updated => [:lastBuildDate, :pubDate, :dc_date],
-        :id => :guid
+        :id => :guid,
+        :ttl => :ttl
       }
 
       # make two passes, to catch all possible root elements
@@ -51,6 +52,8 @@ module FeedNormalizer
 
       # custom channel elements
       feed.image = rss.image ? rss.image.url : nil
+      feed.skip_hours = skip(rss, :skipHours)
+      feed.skip_days = skip(rss, :skipDays)
 
       # item elements
       item_mapping = {
@@ -79,6 +82,14 @@ module FeedNormalizer
       feed
     end
 
+    def self.skip(parser, attribute)
+      attributes = case attribute
+        when :skipHours: :hours
+        when :skipDays: :days
+      end
+      channel = parser.channel
+      channel.respond_to?(attribute) && channel.send(attribute).send(attributes).map { |e| e.content }
+    end
+
   end
 end
-

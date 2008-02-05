@@ -75,7 +75,8 @@ module FeedNormalizer
         :copyright => [:copyright, :rights],
         :authors => [:author, :webMaster, :managingEditor, :contributor],
         :urls => :link,
-        :description => [:description, :subtitle]
+        :description => [:description, :subtitle],
+        :ttl => :ttl
       }
 
       map_functions!(feed_mapping, atomrss, feed)

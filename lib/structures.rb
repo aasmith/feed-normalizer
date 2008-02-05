@@ -208,7 +208,7 @@ module FeedNormalizer
     HTML_ELEMENTS = [:title, :description]
 
     # Elements that contain 'plain' Strings, with HTML escaped.
-    SIMPLE_ELEMENTS = [:id, :last_updated, :copyright, :authors, :urls, :image, :generator]
+    SIMPLE_ELEMENTS = [:id, :last_updated, :copyright, :authors, :urls, :image, :generator, :ttl, :skip_hours, :skip_days]
 
     # Elements that contain both HTML and escaped HTML.
     BLENDED_ELEMENTS = [:items]
@@ -224,6 +224,8 @@ module FeedNormalizer
       # set up associations (i.e. arrays where needed)
       @urls = []
       @authors = []
+      @skip_hours = []
+      @skip_days = []
       @items = []
       @parser = wrapper.parser.to_s
       @last_updated = nil

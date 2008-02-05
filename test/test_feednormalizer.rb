@@ -68,6 +68,9 @@ class FeedNormalizerTest < Test::Unit::TestCase
 
     assert_equal "BBC News | Technology | UK Edition", feed.title
     assert_equal ["http://news.bbc.co.uk/go/rss/-/1/hi/technology/default.stm"], feed.urls
+    assert_equal 15, feed.ttl
+    assert_equal [6, 7, 8, 9, 10, 11], feed.skip_hours
+    assert_equal ["Sunday"], feed.skip_days
     assert_equal "MP3 player court order overturned", feed.entries.last.title
     assert_equal "<b>SanDisk</b> puts its MP3 players back on display at a German electronics show after overturning a court injunction.", feed.entries.last.description
     assert_match(/test\d/, feed.entries.last.content)
@@ -79,6 +82,9 @@ class FeedNormalizerTest < Test::Unit::TestCase
 
     assert_equal "~:caboose", feed.title
     assert_equal "http://habtm.com/xml/atom10/feed.xml", feed.url
+    assert_equal nil, feed.ttl
+    assert_equal [], feed.skip_hours
+    assert_equal [], feed.skip_days
     assert_equal "Starfish - Easy Distribution of Site Maintenance", feed.entries.last.title
     assert_equal "urn:uuid:6c028f36-f87a-4f53-b7e3-1f943d2341f0", feed.entries.last.id
 

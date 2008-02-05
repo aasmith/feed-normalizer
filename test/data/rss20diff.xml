@@ -10,6 +10,17 @@
     <copyright>Copyright: (C) British Broadcasting Corporation, see http://news.bbc.co.uk/1/hi/help/rss/4498287.stm for terms and conditions of reuse</copyright>
     <docs>http://www.bbc.co.uk/syndication/</docs>
     <ttl>15</ttl>
+    <skipHours>
+       <hour>6</hour>
+       <hour>7</hour>
+       <hour>8</hour>
+       <hour>9</hour>
+       <hour>10</hour>
+       <hour>11</hour>
+    </skipHours>
+    <skipDays>
+       <day>Sunday</day>
+    </skipDays>
 
     <image>
       <title>BBC News</title>
