@@ -1,3 +1,13 @@
+1.5.0
+ * Add support for new fields:
+   * Atom 0.3: issued is now available through entry.date_published.
+   * RSS: feed.skip_hours, feed.skip_days, feed.ttl [joshpeek]
+   * All: entry.last_updated, this is an alias to entry.date_published for RSS.
+ * Rewrite relative links in content [joshpeek]
+ * Handle CDATA sections consistently across all formats. [sam.lown]
+ * Prevent SimpleRSS from doing its own escaping. [reported by: paul.stadig, lionel.bouton]
+ * Reparse Time classes [reported by: sam.lown]
+
 1.4.0
 
  * Support content:encoded. Accessible via Entry#content.
