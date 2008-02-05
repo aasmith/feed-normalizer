@@ -62,7 +62,8 @@ module FeedNormalizer
         :description => :description,
         :content => [:content_encoded, :description],
         :title => :title,
-        :authors => [:author, :dc_creator]
+        :authors => [:author, :dc_creator],
+        :last_updated => [:pubDate, :dc_date] # This is effectively an alias for date_published for this parser.
       }
 
       rss.items.each do |rss_item|

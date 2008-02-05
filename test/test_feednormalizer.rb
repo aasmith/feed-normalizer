@@ -251,5 +251,17 @@ class FeedNormalizerTest < Test::Unit::TestCase
       feed.items.first.content
   end
 
+  def test_last_updated_simple_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10], :force_parser => SimpleRssParser, :try_others => false)
+
+    assert_equal Time.parse("Wed Aug 16 09:59:44 -0700 2006"), feed.entries.first.last_updated
+  end
+
+  def test_last_updated_ruby_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
+
+    assert_equal feed.entries.first.date_published, feed.entries.first.last_updated
+  end
+
 end
 

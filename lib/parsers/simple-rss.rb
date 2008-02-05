@@ -94,7 +94,8 @@ module FeedNormalizer
         :content => [:content, :content_encoded, :description],
         :title => :title,
         :authors => [:author, :contributor, :dc_creator],
-        :categories => :category
+        :categories => :category,
+        :last_updated => [:updated, :dc_date, :pubDate]
       }
 
       atomrss.entries.each do |atomrss_entry|
