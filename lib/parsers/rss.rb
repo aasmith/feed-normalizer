@@ -89,7 +89,9 @@ module FeedNormalizer
         when :skipDays: :days
       end
       channel = parser.channel
-      channel.respond_to?(attribute) && x = channel.send(attribute) && x.send(attributes).map { |e| e.content }
+
+      return nil unless channel.respond_to?(attribute) && a = channel.send(attribute)
+      a.send(attributes).collect{|e| e.content}
     end
 
   end
