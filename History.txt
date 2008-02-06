@@ -1,3 +1,7 @@
+1.5.1
+
+ * Fix a bug that was breaking the parsing process for certain feeds. [reported by: Patrick Minton]
+
 1.5.0
 
  * Add support for new fields:

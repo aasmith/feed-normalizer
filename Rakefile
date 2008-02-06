@@ -1,6 +1,6 @@
 require 'hoe'
 
-Hoe.new("feed-normalizer", "1.5.0") do |s|
+Hoe.new("feed-normalizer", "1.5.1") do |s|
   s.author = "Andrew A. Smith"
   s.email = "andy@tinnedfruit.org"
   s.url = "http://feed-normalizer.rubyforge.org/"
