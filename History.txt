@@ -1,4 +1,5 @@
 1.5.0
+
  * Add support for new fields:
    * Atom 0.3: issued is now available through entry.date_published.
    * RSS: feed.skip_hours, feed.skip_days, feed.ttl [joshpeek]
