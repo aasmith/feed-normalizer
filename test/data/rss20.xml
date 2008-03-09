@@ -31,7 +31,7 @@
     <item>
       <title>Concerns over security software</title>
       <description><![CDATA[BBC Click investigates free security software and finds out who will protect PCs when Microsoft launches Vista.]]></description>
-      <content:encoded><![CDATA[<p>test1</p>]]></content:encoded>
+      <content:encoded>  <![CDATA[<p>test1</p>]]>  </content:encoded>
       <link>http://news.bbc.co.uk/go/rss/-/1/hi/programmes/click_online/5326654.stm</link>
       <guid isPermaLink="false">http://news.bbc.co.uk/1/hi/programmes/click_online/5326654.stm</guid>
       <pubDate>Sat, 09 Sep 2006 12:45:35 GMT</pubDate>

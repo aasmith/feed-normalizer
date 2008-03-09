@@ -197,7 +197,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => SimpleRssParser, :try_others => false)
 
     feed.entries.each_with_index do |e, i|
-      assert_equal("<p>test#{i+1}</p>", e.content)
+      assert_match(/\s*<p>test#{i+1}<\/p>\s*/, e.content)
     end
   end
 
@@ -205,7 +205,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => RubyRssParser, :try_others => false)
 
     feed.entries.each_with_index do |e, i|
-      assert_equal("<p>test#{i+1}</p>", e.content)
+      assert_match(/\s*<p>test#{i+1}<\/p>\s*/, e.content)
     end
   end
 

@@ -24,9 +24,9 @@ class SimpleRSS
 
   undef unescape
   def unescape(s)
-   if s =~ /^(<!\[CDATA\[|\]\]>)/
+   if s =~ /^\s*(<!\[CDATA\[|\]\]>)/
      # Raw HTML is inside the CDATA, so just remove the CDATA wrapper.
-     s.gsub(/(<!\[CDATA\[|\]\]>)/,'').strip
+     s.gsub(/(<!\[CDATA\[|\]\]>)/,'')
    elsif s =~ /[<>]/
      # Already looks like HTML.
      s
