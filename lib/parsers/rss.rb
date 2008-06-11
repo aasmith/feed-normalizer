@@ -1,8 +1,10 @@
 require 'rss'
 
-# For some reason, this is only included in the RDF Item by default.
-class RSS::Rss::Channel::Item # :nodoc:
-  include RSS::ContentModel
+# For some reason, this is only included in the RDF Item by default (in 0.1.6).
+unless RSS::Rss::Channel::Item.new.respond_to?(:content_encoded)
+  class RSS::Rss::Channel::Item # :nodoc:
+    include RSS::ContentModel
+  end
 end
 
 module FeedNormalizer
@@ -20,7 +22,8 @@ module FeedNormalizer
         return nil
       end
 
-      rss ? package(rss, loose) : nil
+      # check for channel to make sure we're only dealing with RSS.
+      rss && rss.respond_to?(:channel) ? package(rss, loose) : nil
     end
 
     # Fairly high priority; a fast and strict parser.
