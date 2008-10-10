@@ -62,6 +62,7 @@ module FeedNormalizer
       item_mapping = {
         :date_published => [:pubDate, :dc_date],
         :urls => :link,
+        :enclosures => :enclosure,
         :description => :description,
         :content => [:content_encoded, :description],
         :title => :title,

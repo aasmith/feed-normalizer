@@ -221,8 +221,8 @@ class FeedNormalizerTest < Test::Unit::TestCase
 
     Time.class_eval "alias :old_to_s :to_s; def to_s(x=1); old_to_s; end"
 
-    assert_equal "Sat Sep 09 07:57:06 -0700 2006", feed.last_updated.to_s(:foo)
-    assert_equal "Sat Sep 09 05:45:35 -0700 2006", feed.entries.first.date_published.to_s(:foo)
+    assert_equal "Sat Sep 09 10:57:06 -0400 2006", feed.last_updated.to_s(:foo)
+    assert_equal "Sat Sep 09 08:45:35 -0400 2006", feed.entries.first.date_published.to_s(:foo)
   end
 
   def test_atom03_has_issued

@@ -15,6 +15,7 @@
     <updated>2006-08-16T11:59:44-05:00</updated>
     <title type="html">A forum on Rails</title>
     <link href="http://habtm.com/articles/2006/08/16/a-forum-on-rails" rel="alternate" type="text/html"/>
+    <enclosure url="http://habtm.com/podcasts/2008-10-08.mp3" type="audio/mpeg"/>
     <category term="rails" scheme="http://habtm.com/articles/category/rails" label="rails"/>
     <category term="ruby" scheme="http://habtm.com/articles/category/ruby" label="ruby"/>
     <summary type="html">&lt;plaintext&gt;&lt;p&gt;Josh Goebel and I took an evening to bang out a little project: &lt;a href="http://beast.caboo.se/"&gt;Beast&lt;/a&gt;.  It&amp;#8217;s our minimal no-fluff Rails forum.  It&amp;#8217;s no beast of an application either, clocking in at 285 LOC and a 1:1.5 test ratio.  &lt;a href="http://svn.techno-weenie.net/projects/beast/"&gt;Check it out&lt;/a&gt;!&lt;/p&gt;</summary>
@@ -43,6 +44,7 @@
     <updated>2006-08-10T01:09:02-05:00</updated>
     <title type="html">Starfish - Easy Distribution of Site Maintenance</title>
     <link href="http://habtm.com/articles/2006/08/10/starfish-easy-distribution-of-site-maintenance" rel="alternate" type="text/html"/>
+    <enclosure url="http://websrvr82il.audiovideoweb.com/ny60web16519/LTN/LawTechnologyNow/LawTechnologyNow_OCT08.mp3" type="audio/mpeg"/>
     <summary type="html">&lt;p&gt;Lots of Rails apps are very simple &lt;span class="caps"&gt;CRUD&lt;/span&gt; mappings, which is something Rails excels at. But, as more and more large, complex sites go live with Rails, there is a demand for more complex &amp;#8216;backend&amp;#8217; components in the system. Already we&amp;#8217;ve got &lt;a href="http://brainspl.at/articles/2006/05/15/backgoundrb-initial-release"&gt;BackgrounDRB&lt;/a&gt;, which is great, but enter Starfish, which is a tool for complex distributed tasks made easy.&lt;/p&gt;</summary>
     <content type="html">&lt;p&gt;Lots of Rails apps are very simple &lt;span class="caps"&gt;CRUD&lt;/span&gt; mappings, which is something Rails excels at. But, as more and more large, complex sites go live with Rails, there is a demand for more complex &amp;#8216;backend&amp;#8217; components in the system. Already we&amp;#8217;ve got &lt;a href="http://brainspl.at/articles/2006/05/15/backgoundrb-initial-release"&gt;BackgrounDRB&lt;/a&gt;, which is great, but enter Starfish, which is a tool for complex distributed tasks made easy.&lt;/p&gt;&lt;p&gt;Lucas Carlson (a.k.a. cardmagic) and I have been using Starfish for various distributed tasks at &lt;a href="http://mog.com"&gt;mog.com&lt;/a&gt; for awhile now. I&amp;#8217;d like to show everyone how it works, as an incentive for Lucas to gem up the project and share it with the world.&lt;/p&gt;
 

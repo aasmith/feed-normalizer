@@ -163,7 +163,7 @@ module FeedNormalizer
     include Singular, ElementEquality, ElementCleaner, TimeFix, RewriteRelativeLinks
 
     HTML_ELEMENTS = [:content, :description, :title]
-    SIMPLE_ELEMENTS = [:date_published, :urls, :id, :authors, :copyright, :categories, :last_updated]
+    SIMPLE_ELEMENTS = [:date_published, :urls, :id, :authors, :copyright, :categories, :last_updated, :enclosures]
     BLENDED_ELEMENTS = []
 
     ELEMENTS = HTML_ELEMENTS + SIMPLE_ELEMENTS + BLENDED_ELEMENTS
