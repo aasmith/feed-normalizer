@@ -3,6 +3,7 @@ License.txt
 Manifest.txt
 Rakefile
 README.txt
+feed-normalizer.gemspec
 lib/feed-normalizer.rb
 lib/html-cleaner.rb
 lib/parsers/rss.rb
