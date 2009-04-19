@@ -74,14 +74,17 @@ module FeedNormalizer
 
         # Remove attributes that aren't on the whitelist, or are suspicious URLs.
         (doc/remaining_tags.join(",")).each do |element|
+          next if element.raw_attributes.nil? || element.raw_attributes.empty?
           element.raw_attributes.reject! do |attr,val|
             !HTML_ATTRS.include?(attr) || (HTML_URI_ATTRS.include?(attr) && dodgy_uri?(val))
           end
 
           element.raw_attributes = element.raw_attributes.build_hash {|a,v| [a, add_entities(v)]}
         end unless remaining_tags.empty?
-
-        doc.traverse_text {|t| t.set(add_entities(t.to_html))}
+        
+        doc.traverse_text do |t|
+          t.swap(add_entities(t.to_html))
+        end
 
         # Return the tree, without comments. Ugly way of removing comments,
         # but can't see a way to do this in Hpricot yet.
@@ -176,15 +179,3 @@ module Enumerable #:nodoc:
     result
   end
 end
-
-# http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/207625
-#  Subject: A simple Hpricot text setter
-#  From: Chris Gehlker <canyonrat mac.com>
-#  Date: Fri, 11 Aug 2006 03:19:13 +0900
-class Hpricot::Text #:nodoc:
-  def set(string)
-    @content = string
-    self.raw_string = string
-  end
-end
-
