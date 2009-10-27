@@ -88,9 +88,9 @@ module FeedNormalizer
     end
 
     def self.skip(parser, attribute)
-      attributes = case attribute
-        when :skipHours: :hours
-        when :skipDays: :days
+      case attribute
+        when :skipHours then attributes = :hours
+        when :skipDays then attributes = :days
       end
       channel = parser.channel
 
