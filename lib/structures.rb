@@ -174,6 +174,7 @@ module FeedNormalizer
       @urls = []
       @authors = []
       @categories = []
+      @enclosures = []
       @date_published, @content = nil
     end
 

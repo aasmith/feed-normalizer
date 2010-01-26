@@ -7,6 +7,17 @@ unless RSS::Rss::Channel::Item.new.respond_to?(:content_encoded)
   end
 end
 
+# Add equality onto Enclosures.
+class RSS::Rss::Channel::Item::Enclosure
+  def eql?(enc)
+    instance_variables.all? do |iv|
+      instance_variable_get(iv) == enc.instance_variable_get(iv)
+    end
+  end
+
+  alias == eql?
+end
+
 module FeedNormalizer
   class RubyRssParser < Parser
 
