@@ -1,5 +1,8 @@
 require 'hoe'
 
+$: << "lib"
+require 'feed-normalizer'
+
 Hoe.spec("feed-normalizer") do |s|
   s.version = "1.5.2"
   s.author = "Andrew A. Smith"
