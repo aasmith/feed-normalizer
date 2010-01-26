@@ -15,6 +15,5 @@ test/data/rdf10.xml
 test/data/rss20.xml
 test/data/rss20diff.xml
 test/data/rss20diff_short.xml
-test/test_all.rb
 test/test_feednormalizer.rb
 test/test_htmlcleaner.rb
