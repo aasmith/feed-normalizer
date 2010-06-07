@@ -4,7 +4,7 @@ $: << "lib"
 require 'feed-normalizer'
 
 Hoe.spec("feed-normalizer") do |s|
-  s.version = "1.5.2"
+  s.version = "1.5.3"
   s.author = "Andrew A. Smith"
   s.email = "andy@tinnedfruit.org"
   s.url = "http://github.com/aasmith/feed-normalizer"

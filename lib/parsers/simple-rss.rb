@@ -5,7 +5,7 @@ require 'simple-rss'
 #     http://rubyforge.org/tracker/index.php?func=detail&aid=13980&group_id=893&atid=3517
 #   * The '+' symbol is lost when escaping fields.
 #     http://rubyforge.org/tracker/index.php?func=detail&aid=10852&group_id=893&atid=3517
-#
+#   * SimpleRSS parser supports media rss from 1.2.3 on!
 class SimpleRSS
   @@item_tags << :issued
 
@@ -96,7 +96,19 @@ module FeedNormalizer
         :title => :title,
         :authors => [:author, :contributor, :dc_creator],
         :categories => :category,
-        :last_updated => [:updated, :dc_date, :pubDate]
+        :last_updated => [:updated, :dc_date, :pubDate],
+        :media_content_url => :media_content_url, 
+        :media_content_type => :media_content_type,
+        :media_content_height => :media_content_height, 
+        :media_content_width => :media_content_width,
+    		:media_title => :media_title,
+    		:media_thumbnail_url => :media_thumbnail_url, 
+    		:media_thumbnail_height => :media_thumbnail_height, 
+    		:media_thumbnail_width => :media_thumbnail_width,
+    		:media_credit => :media_credit, 
+    		:media_credit_role => :media_credit_role,
+    		:media_category => :media_category, 
+    		:media_category_scheme => :media_category_scheme
       }
 
       atomrss.entries.each do |atomrss_entry|
