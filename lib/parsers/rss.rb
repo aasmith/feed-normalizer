@@ -87,8 +87,8 @@ module FeedNormalizer
 
         # custom item elements
         feed_entry.id = rss_item.guid.content if rss_item.respond_to?(:guid) && rss_item.guid
-	# fall back to link for ID
-	feed_entry.id ||= rss_item.link if rss_item.respond_to?(:link) && rss_item.link
+        # fall back to link for ID
+        feed_entry.id ||= rss_item.link if rss_item.respond_to?(:link) && rss_item.link
         feed_entry.copyright = rss.copyright if rss_item.respond_to? :copyright
         feed_entry.categories = loose ?
                                   rss_item.categories.collect{|c|c.content} :
