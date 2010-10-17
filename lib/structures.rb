@@ -123,11 +123,21 @@ module FeedNormalizer
     def reparse(obj)
       @parsed ||= false
 
-      return obj if @parsed
-
-      if obj.is_a?(Time)
+      if obj.is_a?(String)
         @parsed = true
-        Time.at(obj) rescue obj
+        begin
+          Time.at(obj) rescue Time.rfc2822(obj) rescue Time.parse(obj)
+        rescue
+          @parsed = false
+          obj
+        end
+      else
+        return obj if @parsed
+
+        if obj.is_a?(Time)
+          @parsed = true
+          Time.at(obj) rescue obj
+        end
       end
     end
   end
@@ -175,12 +185,17 @@ module FeedNormalizer
       @authors = []
       @categories = []
       @enclosures = []
-      @date_published, @content = nil
+      @date_published, @content, @last_updated = nil
     end
 
     undef date_published
     def date_published
       @date_published = reparse(@date_published)
+    end
+
+    undef last_updated
+    def last_updated
+      @last_updated = reparse(@last_updated)
     end
 
     undef content
