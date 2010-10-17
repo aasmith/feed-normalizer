@@ -105,6 +105,8 @@ module FeedNormalizer
 
         # custom entry elements
         feed_entry.id = atomrss_entry.guid || atomrss_entry[:id] # entries are a Hash..
+        # fall back to link for ID
+        feed_entry.id ||= atomrss_entry.link if atomrss_entry.respond_to?(:link) && atomrss_entry.link
         feed_entry.copyright = atomrss_entry.copyright || (atomrss.respond_to?(:copyright) ? atomrss.copyright : nil)
 
         feed.entries << feed_entry
