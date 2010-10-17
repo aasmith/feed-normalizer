@@ -261,5 +261,12 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_equal feed.entries.first.date_published, feed.entries.first.last_updated
   end
 
+  def test_skip_empty_items
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => Fn::RubyRssParser, :try_others => false)
+    assert_not_nil feed.items.last.description
+
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20], :force_parser => Fn::SimpleRssParser, :try_others => false)
+    assert_not_nil feed.items.last.description
+  end
 end
 

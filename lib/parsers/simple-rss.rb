@@ -100,16 +100,18 @@ module FeedNormalizer
       }
 
       atomrss.entries.each do |atomrss_entry|
-        feed_entry = Entry.new
-        map_functions!(entry_mapping, atomrss_entry, feed_entry)
-
-        # custom entry elements
-        feed_entry.id = atomrss_entry.guid || atomrss_entry[:id] # entries are a Hash..
-        # fall back to link for ID
-        feed_entry.id ||= atomrss_entry.link if atomrss_entry.respond_to?(:link) && atomrss_entry.link
-        feed_entry.copyright = atomrss_entry.copyright || (atomrss.respond_to?(:copyright) ? atomrss.copyright : nil)
-
-        feed.entries << feed_entry
+        unless atomrss_entry.title.nil? && atomrss_entry.description.nil? # some feeds return empty items
+          feed_entry = Entry.new
+          map_functions!(entry_mapping, atomrss_entry, feed_entry)
+  
+          # custom entry elements
+          feed_entry.id = atomrss_entry.guid || atomrss_entry[:id] # entries are a Hash..
+          # fall back to link for ID
+          feed_entry.id ||= atomrss_entry.link if atomrss_entry.respond_to?(:link) && atomrss_entry.link
+          feed_entry.copyright = atomrss_entry.copyright || (atomrss.respond_to?(:copyright) ? atomrss.copyright : nil)
+  
+          feed.entries << feed_entry
+        end
       end
 
       feed
