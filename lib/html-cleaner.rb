@@ -81,7 +81,7 @@ module FeedNormalizer
 
           element.raw_attributes = element.raw_attributes.build_hash {|a,v| [a, add_entities(v)]}
         end unless remaining_tags.empty?
-        
+
         doc.traverse_text do |t|
           t.swap(add_entities(t.to_html))
         end
