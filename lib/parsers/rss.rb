@@ -85,7 +85,7 @@ module FeedNormalizer
         unless rss_item.title.nil? && rss_item.description.nil? # some feeds return empty items
           feed_entry = Entry.new
           map_functions!(item_mapping, rss_item, feed_entry)
-  
+
           # custom item elements
           feed_entry.id = rss_item.guid.content if rss_item.respond_to?(:guid) && rss_item.guid
           # fall back to link for ID
@@ -94,7 +94,7 @@ module FeedNormalizer
           feed_entry.categories = loose ?
                                     rss_item.categories.collect{|c|c.content} :
                                     [rss_item.categories.first.content] rescue []
-  
+
           feed.entries << feed_entry
         end
       end
