@@ -14,7 +14,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
   # Load up the xml files
   Dir.open(data_dir).each do |fn|
     next unless fn =~ /[.]xml$/
-    XML_FILES[fn.scan(/(.*)[.]/).to_s.to_sym] = File.read(data_dir + "/#{fn}")
+    XML_FILES[File.basename(fn, File.extname(fn)).to_sym] = File.read(data_dir + "/#{fn}")
   end
 
   def test_basic_parse
