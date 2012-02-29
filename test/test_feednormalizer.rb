@@ -137,14 +137,6 @@ class FeedNormalizerTest < Test::Unit::TestCase
   def test_method_missing
     assert_raise(NoMethodError) { FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20]).nonexistent }
 
-    assert_raise(NoMethodError) do
-      obj = Object.new
-      class << obj
-        include Fn::Singular
-      end
-      obj.foo
-    end
-
     # Another test of Singular's method_missing: sending :flatten to a 2-D array of FeedNormalizer::Entrys
     # causes :to_ary to be sent to the Entrys.
     assert_nothing_raised { [[Fn::Entry.new], [Fn::Entry.new]].flatten }

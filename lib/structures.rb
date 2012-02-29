@@ -11,7 +11,9 @@ module FeedNormalizer
     # Object contains an array called 'alphas', which looks like [:a, :b, :c].
     # Call object.alpha and :a is returned.
     def method_missing(name, *args)
-      return self.send(:"#{name}s").first rescue super(name, *args)
+      plural_name = :"#{name}s"
+      return self.send(plural_name).first if respond_to?(plural_name)
+      super(name, *args)
     end
 
     def respond_to?(x, y=false)
