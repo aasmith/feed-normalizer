@@ -75,6 +75,19 @@ class FeedNormalizerTest < Test::Unit::TestCase
     assert_instance_of Time, feed.entries.last.date_published
   end
 
+  def test_media_rss
+    feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:media_rss])
+
+    assert_equal "Uploads from herval", feed.title
+    assert_equal ["http://www.flickr.com/photos/herval/"], feed.urls
+    assert_equal nil, feed.ttl
+    assert_equal [], feed.skip_hours
+    assert_equal [], feed.skip_days
+    assert_equal "Kodak", feed.entries.last.title
+    assert_equal "Kodak", feed.entries.last.media_title
+    assert_equal "http://farm5.static.flickr.com/4056/4629419090_ced5e88c49_s.jpg", feed.entries.last.media_thumbnail_url
+  end
+
   def test_simplerss
     feed = FeedNormalizer::FeedNormalizer.parse(XML_FILES[:atom10])
 

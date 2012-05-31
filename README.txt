@@ -59,5 +59,6 @@ See FeedNormalizer::RubyRssParser and FeedNormalizer::SimpleRssParser for exampl
 
 == Authors
 * Andrew A. Smith (andy@tinnedfruit.org)
+* Herval Freire (hervalfreire@gmail.com)
 
 This library is released under the terms of the BSD License (see the License.txt file for details).
