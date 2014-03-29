@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), '../lib')))
 require 'test/unit'
 require 'feed-normalizer'
+require 'yaml'
 
 class FeedNormalizerTest < Test::Unit::TestCase
 
@@ -13,7 +14,7 @@ class FeedNormalizerTest < Test::Unit::TestCase
   # Load up the xml files
   Dir.open(data_dir).each do |fn|
     next unless fn =~ /[.]xml$/
-    XML_FILES[fn.scan(/(.*)[.]/).to_s.to_sym] = File.read(data_dir + "/#{fn}")
+    XML_FILES[File.basename(fn, File.extname(fn)).to_sym] = File.read(data_dir + "/#{fn}")
   end
 
   def test_basic_parse
@@ -134,7 +135,11 @@ class FeedNormalizerTest < Test::Unit::TestCase
   end
 
   def test_method_missing
-    assert_raise(NoMethodError) { Fn::Feed.new(nil).nonexistant }
+    assert_raise(NoMethodError) { FeedNormalizer::FeedNormalizer.parse(XML_FILES[:rss20]).nonexistent }
+
+    # Another test of Singular's method_missing: sending :flatten to a 2-D array of FeedNormalizer::Entrys
+    # causes :to_ary to be sent to the Entrys.
+    assert_nothing_raised { [[Fn::Entry.new], [Fn::Entry.new]].flatten }
   end
 
   def test_clean
